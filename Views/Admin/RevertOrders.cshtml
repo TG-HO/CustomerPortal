@@ -1,0 +1,83 @@
+@model List<CustomerPortal_MVC_.Models.CustOrderTable>
+@{
+    ViewBag.Title = "Revert Orders - Admin";
+    ViewBag.ActiveMenu = "RevertOrders";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><i class="fa fa-undo text-danger mr-2"></i>Revert Orders</h1>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["SuccessMessage"]
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+    }
+
+    <div class="card shadow border-0 mb-4">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold"><i class="fa fa-list mr-2"></i>Orders Eligible for Revert (Released but not shipped)</h6>
+            <span class="badge badge-danger">@(Model != null ? Model.Count : 0) Orders</span>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped table-bordered" id="revertOrdersTable">
+                    <thead class="thead-dark">
+                        <tr class="text-center">
+                            <th>Order Date</th>
+                            <th>Order ID</th>
+                            <th>Customer ID</th>
+                            <th>Product</th>
+                            <th>Release Qty</th>
+                            <th>Tank Lorry</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr class="text-center">
+                                    <td>@(item.OrderCreatedOnDateTime.HasValue ? item.OrderCreatedOnDateTime.Value.ToString("yyyy-MM-dd HH:mm") : "-")</td>
+                                    <td class="font-weight-bold text-danger">@item.OrderPrefixId</td>
+                                    <td>@item.OrderCreatedUser</td>
+                                    <td>@(item.ProductName ?? item.ProductCode)</td>
+                                    <td>@((item.ReleaseQty ?? 0).ToString("N0")) L</td>
+                                    <td>@(item.CarrierCode ?? "Pending")</td>
+                                    <td>
+                                        @using (Html.BeginForm("RevertOrders", "Admin", FormMethod.Post, new { @class = "d-inline" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="orderPrefixId" value="@item.OrderPrefixId" />
+                                            <input type="hidden" name="releaseQty" value="@(item.ReleaseQty ?? 0)" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to revert order @item.OrderPrefixId back to Holds Free?');">
+                                                <i class="fa fa-undo mr-1"></i> Revert
+                                            </button>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $('#revertOrdersTable').DataTable({
+                "ordering": false,
+                "language": {
+                    "searchPlaceholder": "Search orders to revert..."
+                }
+            });
+        });
+    </script>
+}

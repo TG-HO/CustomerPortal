@@ -1,0 +1,157 @@
+@model IEnumerable<CustomerPortal_MVC_.Models.CustOrderTable>
+@{
+    ViewBag.Title = "Pending Orders";
+    ViewBag.ActiveMenu = "Orders";
+}
+
+@section styles {
+    <style>
+        .custOrderTab {
+            background-color: #ED1C24 !important;
+            color: white !important;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 12px 20px;
+            border-radius: 4px;
+            margin-bottom: 25px;
+        }
+        .head {
+            background-color: #ED1C24;
+            color: white;
+        }
+        .num {
+            font-weight: 500;
+        }
+        .order-hover-target {
+            cursor: pointer;
+            transition: color 0.2s ease-in-out;
+        }
+        .order-hover-target:hover {
+            color: #ED1C24 !important;
+            text-decoration: underline !important;
+        }
+        .popover {
+            max-width: 320px !important;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            border: 1px solid #ED1C24;
+        }
+        .popover-header {
+            background-color: #ED1C24 !important;
+            color: white !important;
+            font-weight: bold;
+            font-size: 14px;
+            border-top-left-radius: 7px;
+            border-top-right-radius: 7px;
+            padding: 8px 12px;
+        }
+        .popover-body {
+            padding: 12px;
+            font-size: 13px;
+            background-color: #fff;
+        }
+    </style>
+}
+
+<div class="container-fluid">
+    <div class="alert custOrderTab shadow-sm">
+        <i class="fas fa-clock mr-2"></i> PENDING ORDERS
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-sm mt-1 table-hover" id="tabPendingOrders">
+            <thead class="head">
+                <tr class="table-bordered text-white text-center">
+                    <th scope="col">Order Date</th>
+                    <th scope="col">Purchase ID (Hover for Details)</th>
+                    <th scope="col">Site Name</th>
+                    <th scope="col">Product Code</th>
+                    <th scope="col">Product Name</th>
+                    <th scope="col">Ordered Qty</th>
+                    <th scope="col">Pending Qty</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var order in Model)
+                    {
+                        string orderDateStr = order.OrderCreatedOn.HasValue ? order.OrderCreatedOn.Value.ToString("yyyy-MM-dd") : (order.OrderCreatedOnDateTime.HasValue ? order.OrderCreatedOnDateTime.Value.ToString("yyyy-MM-dd") : "-");
+                        string orderTimeStr = order.OrderCreatedOnDateTime.HasValue ? order.OrderCreatedOnDateTime.Value.ToString("hh:mm tt") : "-";
+                        string prodName = order.ProductName ?? order.ProductCode;
+                        string siteName = order.Site ?? "Main Depot";
+                        int ordQty = order.RequiredQuantity;
+                        int pendQty = order.PendingQty ?? order.RequiredQuantity;
+
+                        string hoverContent = $"<div class='text-left'>" +
+                                              $"<div class='mb-2 text-danger font-weight-bold'><i class='fas fa-info-circle mr-1'></i> This Order is Under Review</div>" +
+                                              $"<table class='table table-sm table-borderless small mb-0'>" +
+                                              $"<tr><td class='text-muted p-0 py-1'>Purchase ID:</td><td class='font-weight-bold text-dark p-0 py-1'>{order.OrderPrefixId}</td></tr>" +
+                                              $"<tr><td class='text-muted p-0 py-1'>Site:</td><td class='font-weight-bold text-dark p-0 py-1'>{siteName}</td></tr>" +
+                                              $"<tr><td class='text-muted p-0 py-1'>Product:</td><td class='font-weight-bold text-dark p-0 py-1'>{prodName}</td></tr>" +
+                                              $"<tr><td class='text-muted p-0 py-1'>Ordered Qty:</td><td class='font-weight-bold text-dark p-0 py-1'>{ordQty:N0} L</td></tr>" +
+                                              $"<tr><td class='text-muted p-0 py-1'>Pending Qty:</td><td class='font-weight-bold text-danger p-0 py-1'>{pendQty:N0} L</td></tr>" +
+                                              $"<tr><td class='text-muted p-0 py-1'>Order Date:</td><td class='font-weight-bold text-dark p-0 py-1'>{orderDateStr} {orderTimeStr}</td></tr>" +
+                                              $"<tr><td class='text-muted p-0 py-1'>Status:</td><td><span class='badge badge-warning'>Under Review</span></td></tr>" +
+                                              $"</table>" +
+                                              $"</div>";
+
+                        <tr class="text-black text-center">
+                            <td class="num">@orderDateStr</td>
+                            <td>
+                                <a href="@Url.Action("OpenOrderDetail", "Home", new { op = order.OrderPrefixId })" 
+                                   class="text-primary font-weight-bold order-hover-target pending-popover" 
+                                   data-toggle="popover" 
+                                   title="Order Quick Details" 
+                                   data-content="@hoverContent">
+                                    <i class="fas fa-info-circle text-danger mr-1 small"></i>@order.OrderPrefixId
+                                </a>
+                            </td>
+                            <td>@siteName</td>
+                            <td>@order.ProductCode</td>
+                            <td>@prodName</td>
+                            <td class="num">@ordQty.ToString("N0") L</td>
+                            <td class="num text-danger font-weight-bold">@pendQty.ToString("N0") L</td>
+                            <td>
+                                <a href="@Url.Action("OpenOrderDetail", "Home", new { op = order.OrderPrefixId })" class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-muted">No pending orders found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // Enable hover popovers on pending orders
+            $('.pending-popover').popover({
+                html: true,
+                trigger: 'hover focus',
+                placement: 'right',
+                container: 'body'
+            });
+
+            if ($('#tabPendingOrders tbody tr').length > 0 && !$('#tabPendingOrders tbody tr td[colspan]').length) {
+                $('#tabPendingOrders').DataTable({
+                    order: [[0, 'desc']],
+                    pageLength: 25,
+                    language: {
+                        search: "Filter Pending Orders:"
+                    }
+                });
+            }
+        });
+    </script>
+}

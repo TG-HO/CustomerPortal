@@ -1,0 +1,132 @@
+@model CustomerPortal_MVC_.Models.ViewModels.DepositUploadViewModel
+@{
+    ViewBag.Title = "Customer Deposit";
+    ViewBag.ActiveMenu = "UploadDeposit";
+}
+
+@section styles {
+    <style>
+        #order {
+            width: 65% !important;
+            margin: 0px auto;
+            margin-top: 40px !important;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+        }
+        .btn-deposit {
+            background-color: #ED1C24 !important;
+            color: white !important;
+            border-radius: 0px !important;
+            font-weight: bold;
+        }
+        .opt:hover {
+            background-color: red !important;
+        }
+    </style>
+}
+
+<div class="container-fluid mb-5">
+    @using (Html.BeginForm("Upload", "Deposit", FormMethod.Post, new { @class = "row g-3", @id = "order", enctype = "multipart/form-data" }))
+    {
+        @Html.AntiForgeryToken()
+
+        @Html.ValidationSummary(true, "", new { @class = "col-12 alert alert-danger" })
+
+        <!-- Deposit Amount -->
+        <div class="col-md-6 mb-3">
+            <label for="dsAmount" class="form-label font-weight-bold">Enter Amount:</label>
+            <input type="text" class="form-control numbersOnly" onkeyup="paisaq2ss(this.value)" autocomplete="off" id="dsAmount" name="Amount" value="@(Model?.Amount > 0 ? Model.Amount.ToString() : "")" required>
+            <span class="help-block text-muted small mt-1" style="max-width: 15rem; display: block;" id="RsNumber"></span>
+            @Html.ValidationMessageFor(m => m.Amount, "", new { @class = "text-danger small" })
+        </div>
+
+        <!-- Deposit Banks -->
+        <div class="col-md-6 mb-3">
+            <label for="code" class="form-label font-weight-bold">Select Bank:</label>
+            <select class="form-control" name="Bank" id="code" required>
+                <option disabled value="" @(string.IsNullOrEmpty(Model?.Bank) ? "selected" : "")>-- Select Bank --</option>
+                <option value="1021202008" class="opt" @(Model?.Bank == "1021202008" ? "selected" : "")>ASKARI BANK</option>
+                <option value="1021202005" class="opt" @(Model?.Bank == "1021202005" ? "selected" : "")>HBL COLLECTION ACCOUNT</option>
+                <option value="1021202009" class="opt" @(Model?.Bank == "1021202009" ? "selected" : "")>NATIONAL BANK OF PAKISTAN</option>
+                <option value="1021202006" class="opt" @(Model?.Bank == "1021202006" ? "selected" : "")>MCB SUKKUR BRANCH</option>
+                <option value="1021202004" class="opt" @(Model?.Bank == "1021202004" ? "selected" : "")>HABIB BANK LIMITED - TARIQ ROAD</option>
+            </select>
+            @Html.ValidationMessageFor(m => m.Bank, "", new { @class = "text-danger small" })
+        </div>
+
+        <!-- Deposit Slip Date -->
+        <div class="col-md-6 mb-3">
+            <label for="dsDate" class="form-label font-weight-bold">Deposit Slip Date:</label>
+            <input type="date" class="form-control" id="dsDate" name="DsDate" value="@(Model?.DsDate?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))" required>
+            @Html.ValidationMessageFor(m => m.DsDate, "", new { @class = "text-danger small" })
+        </div>
+
+        <!-- Deposit Slip Upload -->
+        <div class="col-md-6 mb-3">
+            <label for="dsUpload" class="form-label font-weight-bold">Deposit Slip Upload:</label>
+            <input type="file" class="form-control-file" id="dsUpload" name="DsUpload" required onchange="ValidateFileUpload();">
+            <small class="text-danger d-block mt-1">Note: Only png, jpeg, jpg, pdf formats are allowed (Max: 400 KB)</small>
+            @Html.ValidationMessageFor(m => m.DsUpload, "", new { @class = "text-danger small" })
+        </div>
+
+        <!-- Deposit Description -->
+        <div class="col-md-12 mb-3">
+            <label for="dsDesc" class="form-label font-weight-bold">Description:</label>
+            <textarea class="form-control" autocomplete="off" id="dsDesc" rows="4" name="Description" required>@Model?.Description</textarea>
+            @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger small" })
+        </div>
+
+        <!-- Deposit Form Submit -->
+        <div class="col-md-12 text-center mt-3">
+            <button type="submit" name="submit" class="btn btn-deposit px-5 py-2" id="btnDs">Submit Deposit Slip</button>
+        </div>
+    }
+</div>
+
+@section scripts {
+    <script>
+        function ValidateFileUpload() {
+            var fuData2 = document.getElementById('dsUpload');
+            var FileUploadPath2 = fuData2.value;
+
+            if (FileUploadPath2 == '') {
+                Swal.fire({ text: "Please upload an image/document", allowOutsideClick: false });
+            } else {
+                var Extension = FileUploadPath2.substring(FileUploadPath2.lastIndexOf('.') + 1).toLowerCase();
+
+                if (Extension == "pdf" || Extension == "png" || Extension == "jpeg" || Extension == "jpg") {
+                    if (fuData2.files && fuData2.files[0]) {
+                        var size = fuData2.files[0].size;
+                        if (size > 409600) { // 400KB
+                            Swal.fire({
+                                text: 'File size should be less than 400 KB',
+                                allowOutsideClick: false
+                            });
+                            $("#dsUpload").val('');
+                        }
+                    }
+                } else {
+                    Swal.fire({
+                        text: 'Deposit Slip format should be: JPG, PNG, JPEG or PDF',
+                        allowOutsideClick: false
+                    });
+                    $("#dsUpload").val('');
+                }
+            }
+        }
+
+        $('.numbersOnly').keyup(function(){
+            this.value = this.value.replace(/[^0-9\.,]/g,'');
+        });
+
+        function paisaq2ss(val) {
+            if (val) {
+                document.getElementById("RsNumber").innerHTML = "PKR " + Number(val.replace(/,/g, '')).toLocaleString();
+            } else {
+                document.getElementById("RsNumber").innerHTML = "";
+            }
+        }
+    </script>
+}

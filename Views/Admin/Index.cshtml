@@ -1,0 +1,73 @@
+@model List<CustomerPortal_MVC_.Models.CustOrderTable>
+@{
+    ViewBag.Title = "Admin Dashboard - Order Management";
+    ViewBag.ActiveMenu = "AdminDashboard";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><i class="fa fa-dashboard text-danger mr-2"></i>Pending Order Requests</h1>
+    </div>
+
+    <div class="card shadow border-0 mb-4">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold"><i class="fa fa-list mr-2"></i>Customer Orders Awaiting Approval</h6>
+            <span class="badge badge-danger">@Model.Count Orders</span>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped table-bordered" id="adminOrdersTable">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Order Prefix ID</th>
+                            <th>Customer Account</th>
+                            <th>Product</th>
+                            <th>Required Qty</th>
+                            <th>Order Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="font-weight-bold text-danger">@item.OrderPrefixId</td>
+                                <td>@item.OrderCreatedUser</td>
+                                <td>@item.ProductName</td>
+                                <td>@((item.RequiredQuantity ?? 0).ToString("N0")) L</td>
+                                <td>@(item.OrderCreatedOnDateTime.HasValue ? item.OrderCreatedOnDateTime.Value.ToString("yyyy-MM-dd HH:mm") : "N/A")</td>
+                                <td>
+                                    @if (item.HoldsFreeFlag == 1)
+                                    {
+                                        <span class="badge badge-warning">Holds Free</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-info">Pending</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("Approve", "Admin", new { op = item.OrderPrefixId, cust = item.OrderCreatedUser })" class="btn btn-sm btn-danger"><i class="fa fa-pencil mr-1"></i> Review & Approve</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $('#adminOrdersTable').DataTable({
+                "ordering": false,
+                "language": {
+                    "searchPlaceholder": "Search pending orders..."
+                }
+            });
+        });
+    </script>
+}

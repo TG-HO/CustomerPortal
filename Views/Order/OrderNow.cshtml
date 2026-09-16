@@ -1,0 +1,471 @@
+@model CustomerPortal_MVC_.Models.ViewModels.OrderCreateViewModel
+@{
+    ViewBag.Title = "Order Now";
+    ViewBag.ActiveMenu = "OrderNow";
+}
+
+<link rel="stylesheet" href="@Url.Content("~/Content/css/charts.css")">
+<link rel="stylesheet" href="@Url.Content("~/Content/css/jquery.convform.css")">
+<script src="@Url.Content("~/Content/js/jquery.convform.js")"></script>
+
+<style>
+    #order {
+        width: 60% !important;
+        margin: 0px auto;
+        margin-top: 60px !important;
+    }
+
+    .btn {
+        width: 110px !important;
+        border-radius: 0px !important;
+        background-color: #ED1C24 !important;
+    }
+
+    .opt:hover {
+        background-color: red !important;
+    }
+
+    .popover {
+        width: 350px;
+        max-width: 1500px;
+    }
+
+    .popover-content h4 {
+        color: #00A1FF;
+    }
+
+    .popover-content h4 small {
+        color: black;
+    }
+
+    .popover-content button.btn-primary {
+        color: #00A1FF;
+        border-color: #00A1FF;
+        background: white;
+    }
+
+    .popover-content button.btn-default {
+        color: gray;
+        border-color: gray;
+    }
+
+    .btnOverRide {
+        border-radius: 5px !important;
+        width: auto !important;
+    }
+
+    .bd-callout {
+        padding: 1.25rem;
+        margin-top: 1.25rem;
+        margin-bottom: 1.25rem;
+        border: 1px solid #eee;
+        border-left-width: .25rem;
+        border-radius: .25rem;
+    }
+
+    .bd-callout-primary {
+        border-left-color: #0047ab !important;
+    }
+
+    .bd-callout-danger {
+        border-left-color: #8b0000 !important;
+    }
+
+    .bd-callout-success {
+        border-left-color: #39ff14 !important;
+    }
+
+    .bd-callout-warning {
+        border-left-color: #ffdf00 !important;
+    }
+</style>
+
+<div class="container-fluid">
+    @if (ViewBag.OrderPlaced == true)
+    {
+        <!-- Success Check Icon -->
+        <div class="text-center">
+            <i class="fas fa-check-circle fa-7x mb-2" style="color: #8db600;"></i>
+        </div>
+
+        <!-- Thank You Message -->
+        <p class="lead text-center" style="color: #8db600;">Thank you for your Order</p>
+        <img src="@Url.Content("~/Content/icon/GasPump.gif")" alt="Petrol Pump" style="width: 150px; height: 150px; display: block; margin: 0 auto;">
+
+        <!-- Separator -->
+        <hr style="border-top: 3px solid rgba(0,0,0,.1);">
+
+        <!-- Note for Cut off Time -->
+        <div class="alert alert-warning" role="alert">
+            <h4 class="lead"><i class="fas fa-edit"></i>Note :</h4>
+            <p>Please note that Cut-Off time for Order Placement is 05:00 PM. <br>Any Orders placed after 05:00 PM will be placed on next day.</p>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="card mb-3" style="box-shadow: 0 4px 2px -2px gray;">
+            <div class="card-header text-dark">
+                <i class="fas fa-shopping-cart"></i> Order Summary
+            </div>
+            <div class="card-body">
+                <p style="font-size: 20px;">Your Order #@ViewBag.OrderPrefixId</p>
+                <hr style="border-top: 3px solid rgba(0,0,0,.1);">
+                <p class="text-muted">Quantity Ordered<span class="float-right">@ViewBag.OrderedQuantity</span></p>
+                <p class="text-muted">
+                    Dealer Rates (@ViewBag.Site)
+                    <span class="float-right">@ViewBag.DealerRate</span>
+                </p>
+                <hr style="border-top: 2px solid rgba(0,0,0,.1);">
+                <p class="text-muted" style="background-color: lightgray; padding: 7px">Payment<span class="float-right">@ViewBag.TotalAmount</span></p>
+            </div>
+        </div>
+
+        <!-- Callout Message -->
+        <div class="bd-callout bd-callout-primary mb-3" style="box-shadow: 0 4px 2px -2px gray;">
+            <p style="font-size: 20px;">Customer Information - @CustomerPortal_MVC_.Helpers.UserSession.UserId</p>
+            <hr style="border-top: 3px solid rgba(0,0,0,.1);">
+            <p class="text-muted">Credit Limit<span class="float-right">@ViewBag.CreditLimit</span></p>
+            <p class="text-muted">Balance<span class="float-right">@ViewBag.Balance</span></p>
+        </div>
+
+        <script>
+            setTimeout(function () {
+                window.location.href = '@Url.Action("OrderNow", "Order")';
+            }, 3000);
+        </script>
+    }
+    else
+    {
+        <div class="alert custOrderTab">
+            <i class="fas fa-cart-plus"></i> ORDER NOW
+        </div>
+        <form>
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label class="col-form-label">Customer Balance :</label>
+                    <input type="text" class="form-control num" value="@ViewBag.CustomerBalance" placeholder="hello" disabled>
+                </div>
+                <div class="form-group col-md-3">
+                    <label class="col-form-label">Customer Credit_Limit :</label>
+                    <input type="text" class="form-control num" value="@ViewBag.CreditLimit" placeholder="hello" disabled>
+                </div>
+                <div class="form-group col-md-3">
+                    <label class="col-form-label">Available Credit_Limit :</label>
+                    <input type="text" class="form-control num" value="@ViewBag.AvailableCreditLimit" disabled>
+                </div>
+            </div>
+        </form>
+
+        if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                @Html.ValidationSummary(false, "", new { @class = "mb-0" })
+            </div>
+        }
+
+        <form class="row g-3" method="POST" id="order" action="@Url.Action("OrderNow", "Order")">
+            @Html.AntiForgeryToken()
+
+            <!-- Site Name -->
+            <div class="col-md-6">
+                <label for="site" class="form-label">Site Name:</label>
+                <input type="text" class="form-control" autocomplete="off" value="@Model.Site" id="test" name="Site" readonly>
+            </div>
+
+            <!-- Product Code  -->
+            <div class="orderli" style="margin-left: 10px !important;">
+                <label for="code" class="form-label">Product Code:</label>
+                <select class="form-control" name="ProductCode" id="code">
+                    <option disabled value="-1" selected>-- Select Product --</option>
+                    <option value="01" data-productname="High Speed Diesel" class="opt">01-HSD</option>
+                    <option value="02" data-productname="Premier Motor Gasoline" class="opt">02-PMG</option>
+                    <option value="007" data-productname="HOBC" class="opt">007-HOBC</option>
+                </select>
+            </div>
+
+            <!-- Product Name -->
+            <div class="col-md-6 mt-4">
+                <label for="productname" class="form-label">Product Name:</label>
+                <input type="text" class="form-control" id="productname" name="ProductName" required readonly>
+            </div>
+
+            <!-- Unit of Measurement -->
+            <div class="col-md-6 mt-4">
+                <label for="litre" class="form-label">UoM:</label>
+                <input type="text" class="form-control" id="litre" name="litre" value="Litres" required readonly>
+            </div>
+
+            <!-- Ordered Quantity -->
+            <div class="col-md-6 mt-4">
+                <label for="quantity" class="form-label">Required Quantity :</label>
+                <select name="quantity" id="quantity" class="form-control" placeholder="QTY" required>
+                    <option value="1">8000</option>
+                    <option value="2">16000</option>
+                    <option value="4">24000</option>
+                    <option value="5">32000</option>
+                    <option value="6">40000</option>
+                    <option value="7">48000</option>
+                </select>
+
+                <div style="display: inline-block;">
+                    <!-- Pending Quantity Section -->
+                    <input type="text" name="pendingQty" id="pendingQty" class="form-control col-md-3 mt-1 mr-2" readonly style="display: inline-block;" />+
+                    <input type="text" name="pendingQty2" id="pendingQty2" class="form-control col-md-3 mt-1 mr-2" readonly style="display: inline-block;" /><br />
+                    <span class="text-primary ml-3"><small>Open Quantity</small></span>
+                    <span class="text-primary" style="margin-left: 65px"><small>Holdsfree Partial Qty</small></span>
+                    <br />
+                    <span class="ml-5">=</span>
+                    <br />
+                    <input type="text" name="NewOrderQuantity" id="newOrder" placeholder="Total Qty" class="form-control col-md-3 mt-1" readonly style="display: inline-block;" />
+
+                    <!-- Toast start -->
+                    <div role="alert" aria-live="assertive" aria-atomic="true" class="toast mt-2 ml-3 mb-5" data-autohide="false" style="display: none; box-shadow: 0 4px 2px -2px maroon; width: 280px">
+                        <div class="toast-header text-white bg-danger">
+                            <strong class="mr-auto">Order Limit</strong>
+                            <small>Just Now</small>
+                            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">&times;</button>
+                        </div>
+                        <div class="toast-body">
+                            Minimum Order placed should contain 8,000 quantity.
+                        </div>
+                    </div>
+                    <!-- Toast Ends -->
+                </div>
+            </div>
+            <!-- Ordered Qty ends -->
+
+            <div class="col-md-6 mt-4">
+                <div class="card mt-1" style="margin-left: 12px; width: 300px !important">
+                    <!-- Complete Pending Orders -->
+                    <div class="card-header text-danger">
+                        <i class="fas fa-clock"></i> Open Quantity
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted" role="button" tabindex="0" data-trigger="focus" data-toggle="popover" data-container="body" data-placement="left" id="hsd" style="text-decoration: underline">High Speed Diesel: @ViewBag.HsdOpenQty</p>
+                        <p class="text-muted" role="button" tabindex="0" data-trigger="focus" data-toggle="popover2" data-container="body" data-placement="left" id="pmg" style="text-decoration: underline">Premier Motor Gasoline: @ViewBag.PmgOpenQty</p>
+                        <p class="text-muted" role="button" tabindex="0" data-trigger="focus" data-toggle="popover5" data-container="body" data-placement="left" id="hobc" style="text-decoration: underline">HOBC: @ViewBag.HobcOpenQty</p>
+                    </div>
+                </div>
+
+                <!-- popover starts HSD -->
+                <div id="popover-content" style="display: none;">
+                    <div class="row">
+                        <div class="col-xs-4 p-2">
+                            <img width="50px" height="50px" src="@Url.Content("~/Content/icon/login.png")" />
+                        </div>
+                        <div class="col-xs-8 p-2">
+                            <h4>
+                                <b>High Speed Diesel</b><br />
+                                <small class="text-danger">No. of Open Orders : @ViewBag.HsdOpenOrdersCount</small>
+                            </h4>
+                            <a href="@Url.Action("PendingOrders", "Home", new { prodCode = "01" })" target="_blank" class="btn btn-sm mt-3 text-white btnOverRide">View Details</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- popover starts PMG -->
+                <div id="popover-content2" style="display: none;">
+                    <div class="row">
+                        <div class="col-xs-4 p-2">
+                            <img width="50px" height="50px" src="@Url.Content("~/Content/icon/login.png")" />
+                        </div>
+                        <div class="col-xs-8 p-2">
+                            <h4>
+                                <b>Premier Motor Gasoline</b><br />
+                                <small class="text-danger">No. of Open Orders : @ViewBag.PmgOpenOrdersCount</small>
+                            </h4>
+                            <a href="@Url.Action("PendingOrders", "Home", new { prodCode = "02" })" target="_blank" class="btn btn-sm mt-3 text-white btnOverRide">View Details</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- popover starts HOBC -->
+                <div id="popover-content5" style="display: none;">
+                    <div class="row">
+                        <div class="col-xs-4 p-2">
+                            <img width="50px" height="50px" src="@Url.Content("~/Content/icon/login.png")" />
+                        </div>
+                        <div class="col-xs-8 p-2">
+                            <h4>
+                                <b>HOBC</b><br />
+                                <small class="text-danger">No. of Open Orders : @ViewBag.HobcOpenOrdersCount</small>
+                            </h4>
+                            <a href="@Url.Action("PendingOrders", "Home", new { prodCode = "007" })" target="_blank" class="btn btn-sm mt-3 text-white btnOverRide">View Details</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Holds Free But Not Scheduled (SCD) -->
+                <div class="card mt-1" style="margin-left: 12px; width: 300px !important">
+                    <div class="card-header text-danger">
+                        <i class="fas fa-cube"></i> HoldsFree Partial Quantity
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted" role="button" tabindex="0" data-trigger="focus" data-toggle="popover3" data-container="body" data-placement="left" id="hsd-scd" style="text-decoration: underline">High Speed Diesel: @ViewBag.HsdHfQty</p>
+                        <p class="text-muted" role="button" tabindex="0" data-trigger="focus" data-toggle="popover4" data-container="body" data-placement="left" id="pmg-scd" style="text-decoration: underline">Premier Motor Gasoline: @ViewBag.PmgHfQty</p>
+                        <p class="text-muted" role="button" tabindex="0" data-trigger="focus" data-toggle="popover6" data-container="body" data-placement="left" id="hobc-scd" style="text-decoration: underline">HOBC: @ViewBag.HobcHfQty</p>
+                    </div>
+                </div>
+
+                <!-- popover starts HSD - SCD -->
+                <div id="popover-content3" style="display: none;">
+                    <div class="row">
+                        <div class="col-xs-4 p-2">
+                            <img width="50px" height="50px" src="@Url.Content("~/Content/icon/login.png")" />
+                        </div>
+                        <div class="col-xs-8 p-2">
+                            <h4>
+                                <b>High Speed Diesel</b><br />
+                                <small class="text-danger">Orders with Partial Holdsfree Qty : @ViewBag.HsdHfRecordsCount</small>
+                            </h4>
+                            <a href="@Url.Action("HfBalanceDetails", "Home", new { prodCode = "01" })" target="_blank" class="btn btn-sm mt-3 text-white btnOverRide">View Details</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- popover starts PMG - SCD -->
+                <div id="popover-content4" style="display: none;">
+                    <div class="row">
+                        <div class="col-xs-4 p-2">
+                            <img width="50px" height="50px" src="@Url.Content("~/Content/icon/login.png")" />
+                        </div>
+                        <div class="col-xs-8 p-2">
+                            <h4>
+                                <b>Premier Motor Gasoline</b><br />
+                                <small class="text-danger">Orders with Partial Holdsfree Qty : @ViewBag.PmgHfRecordsCount</small>
+                            </h4>
+                            <a href="@Url.Action("HfBalanceDetails", "Home", new { prodCode = "02" })" target="_blank" class="btn btn-sm mt-3 text-white btnOverRide">View Details</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- popover starts HOBC - SCD -->
+                <div id="popover-content6" style="display: none;">
+                    <div class="row">
+                        <div class="col-xs-4 p-2">
+                            <img width="50px" height="50px" src="@Url.Content("~/Content/icon/login.png")" />
+                        </div>
+                        <div class="col-xs-8 p-2">
+                            <h4>
+                                <b>HOBC</b><br />
+                                <small class="text-danger">Orders with Partial Holdsfree Qty : @ViewBag.HobcHfRecordsCount</small>
+                            </h4>
+                            <a href="@Url.Action("HfBalanceDetails", "Home", new { prodCode = "007" })" target="_blank" class="btn btn-sm mt-3 text-white btnOverRide">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hidden fields for HSD and PMG Available Open Quantity in Ordered Table -->
+            <input type="hidden" name="hsd_availableOpenQty" value="@ViewBag.HsdAvailableOpenQty">
+            <input type="hidden" name="pmg_availableOpenQty" value="@ViewBag.PmgAvailableOpenQty">
+            <input type="hidden" name="HOBC_availableOpenQty" value="@ViewBag.HobcAvailableOpenQty">
+
+            <!-- Submit Order -->
+            <div class="col-md-6">
+                <button type="submit" name="submit" class="btn btn-danger mt-4 ml-3" style="margin-top: -70px !important; width: 300px !important" id="btnorder">Order Now</button>
+            </div>
+        </form>
+    }
+</div>
+
+@section scripts {
+    <script src="@Url.Content("~/Content/js/chatbot.js")"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // focusing on ddl
+            $("#code").focus();
+
+            // disabling quantity field
+            $("#quantity").prop("disabled", true);
+            $("#btnorder").prop("disabled", true);
+
+            // popovers
+            $("[data-toggle=popover]").popover({
+                html: true,
+                content: function () {
+                    return $('#popover-content').html();
+                }
+            });
+
+            $("[data-toggle=popover2]").popover({
+                html: true,
+                content: function () {
+                    return $('#popover-content2').html();
+                }
+            });
+
+            $("[data-toggle=popover5]").popover({
+                html: true,
+                content: function () {
+                    return $('#popover-content5').html();
+                }
+            });
+
+            $("[data-toggle=popover3]").popover({
+                html: true,
+                content: function () {
+                    return $('#popover-content3').html();
+                }
+            });
+
+            $("[data-toggle=popover4]").popover({
+                html: true,
+                content: function () {
+                    return $('#popover-content4').html();
+                }
+            });
+
+            $("[data-toggle=popover6]").popover({
+                html: true,
+                content: function () {
+                    return $('#popover-content6').html();
+                }
+            });
+
+            $('#code').on("change", function () {
+                var ddlCode = $(this).val();
+                var prodName = $('#code').find(':selected').data('productname');
+                $("#productname").val(prodName);
+                $("#btnorder").prop("disabled", false);
+
+                // enabling quantity field
+                $("#quantity").prop("disabled", false);
+
+                // clear on ddl change
+                $('#newOrder, #pendingQty, #pendingQty2, #quantity').val('');
+
+                // tackling pending qty
+                $.ajax({
+                    url: "@Url.Action("ActionPendingQty", "Order")",
+                    method: "GET",
+                    data: { ddlCode: ddlCode },
+                    success: function (data) {
+                        try {
+                            var res = typeof data === 'string' ? JSON.parse(data) : data;
+                            $('#pendingQty').val(res.value);
+                        } catch (e) { }
+                    }
+                });
+
+                // tackling holdsfree quantity
+                $.ajax({
+                    url: "@Url.Action("ActionHfRemQty", "Order")",
+                    method: "GET",
+                    data: { ddlCode: ddlCode },
+                    success: function (data) {
+                        try {
+                            var res = typeof data === 'string' ? JSON.parse(data) : data;
+                            $('#pendingQty2').val(res.value);
+                        } catch (e) { }
+                    }
+                });
+            });
+
+            $('#quantity').change(function () {
+                var dd = document.getElementById("quantity");
+                var ddtext = dd.options[dd.selectedIndex].text;
+                document.getElementsByName('NewOrderQuantity')[0].value = ddtext;
+            });
+        });
+    </script>
+}

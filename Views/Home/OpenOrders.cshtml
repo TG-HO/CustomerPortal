@@ -1,0 +1,128 @@
+@model IEnumerable<CustomerPortal_MVC_.Models.CustOrderTable>
+@{
+    ViewBag.Title = "Open Orders";
+    ViewBag.ActiveMenu = "Orders";
+}
+
+<div class="container-fluid">
+    <div class="alert custOrderTab">
+        <i class="fas fa-box-open"></i> OPEN ORDERS
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["SuccessMessage"]
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+    }
+
+    <div class="table-responsive">
+        <table class="table table-sm mt-1 table-hover" id="tab">
+            <thead class="head">
+                <tr class="table-bordered text-black text-center">
+                    <th scope="col">PO Number</th>
+                    <th scope="col">Product</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">PO Status</th>
+                    <th scope="col">Site</th>
+                    <th scope="col">Created Date</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var order in Model)
+                    {
+                        <tr class="text-black text-center">
+                            <td>
+                                <a href="@Url.Action("OpenOrderDetail", "Home", new { op = order.OrderPrefixId })" class="text-primary font-weight-bold">
+                                    @order.OrderPrefixId
+                                </a>
+                            </td>
+                            <td>@(order.ProductName ?? order.ProductCode)</td>
+                            <td>@order.RequiredQuantity.ToString("N0") L</td>
+                            <td>
+                                @if (order.CancelFlag == 1)
+                                {
+                                    <span class="badge badge-danger">Cancelled</span>
+                                }
+                                else if (order.ReleasedFlag == 1)
+                                {
+                                    <span class="badge badge-info">Released</span>
+                                }
+                                else if (order.HoldsFreeFlag == 1)
+                                {
+                                    <span class="badge badge-warning">Holds Free</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-secondary">Pending</span>
+                                }
+                            </td>
+                            <td>@(order.Site ?? "-")</td>
+                            <td>@(order.OrderCreatedOn.HasValue ? order.OrderCreatedOn.Value.ToString("yyyy-MM-dd") : "-")</td>
+                            <td>
+                                @if (order.ReleasedFlag == 0 && order.ShippedFlag == 0 && order.CancelFlag == 0)
+                                {
+                                    <button class="btn btn-sm btn-outline-danger btn-cancel-order" data-order-prefix="@order.OrderPrefixId">
+                                        <i class="fa fa-times mr-1"></i> Cancel
+                                    </button>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">In Process</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">No open orders found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.btn-cancel-order').click(function () {
+                var orderPrefix = $(this).data('order-prefix');
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You want to cancel order " + orderPrefix + "?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ED1C24',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, cancel it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: "@Url.Action("ActionCancelOrder", "Order")",
+                            method: "GET",
+                            data: { orderPrefix: orderPrefix },
+                            success: function (data) {
+                                var res = typeof data === 'string' ? JSON.parse(data) : data;
+                                if (res.status === 'success') {
+                                    Swal.fire('Cancelled!', 'Order has been cancelled.', 'success').then(() => {
+                                        location.reload();
+                                    });
+                                } else {
+                                    Swal.fire('Failed', 'Could not cancel order.', 'error');
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,117 @@
+@model CustomerPortal_MVC_.Models.ViewModels.LoginViewModel
+@{
+    ViewBag.Title = "Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon & Touch Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="@Url.Content("~/apple-touch-icon.png")">
+    <link rel="icon" type="image/png" sizes="32x32" href="@Url.Content("~/favicon-32x32.png")">
+    <link rel="icon" type="image/png" sizes="16x16" href="@Url.Content("~/favicon-16x16.png")">
+    <link rel="manifest" href="@Url.Content("~/site.webmanifest")">
+    
+    <!-- Vendor CSS -->
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/loginpage/vendor/bootstrap/css/bootstrap.min.css")">
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/loginpage/fonts/font-awesome-4.7.0/css/font-awesome.min.css")">
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/loginpage/fonts/iconic/css/material-design-iconic-font.min.css")">
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/loginpage/vendor/animate/animate.css")">
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/loginpage/vendor/css-hamburgers/hamburgers.min.css")">
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/loginpage/vendor/animsition/css/animsition.min.css")">
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/loginpage/vendor/select2/select2.min.css")">
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/loginpage/vendor/daterangepicker/daterangepicker.css")">
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/loginpage/css/util.css")">
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/loginpage/css/main.css")">
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/login.css?v=3")">
+    <link href="https://fonts.cdnfonts.com/css/neutra-text-alt" rel="stylesheet">
+    <link rel="stylesheet" href="@Url.Content("~/Content/assets/font-awesome-4.7.0/css/font-awesome.min.css")">
+    <link rel="stylesheet" href="@Url.Content("~/Content/assets/font-awesome-4.7.0/css/font-awesome.css")">
+    <link href="//db.onlinewebfonts.com/c/0d2703af1d063ee7547a5e8a189bdb8f?family=Neutraface+2+Display+Inline" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+
+    <div class="limiter">
+        <div class="container-login100" id="bgImage" style="background-image: url('@Url.Content("~/Content/icon/bg6.jpg")');">
+            <div class="navlogin" id="loginNav">
+                <ul class="navli">
+                    <li><img src="@Url.Content("~/Content/icon/logo_white.png")" alt=""></li>
+                    <li class="portal">Customer Portal</li>
+                </ul>
+            </div>
+
+            <div class="message" id="info">
+                <h3>COMING TO YOUR  CITY SOON</h3>
+                <button><a href="https://tajgasoline.com/customers#Experience" target="_blank" style="color: white;"> Learn more </a></button>
+            </div>
+            <div class="formbut" onclick="hide()">
+                <button id="loginbtn">Login</button>
+            </div>
+            <div class="wrap-login100" id="form" style="visibility: hidden;">
+                <form class="login100-form validate-form" method="POST" action="@Url.Action("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl })" onmouseover="customEffect()">
+                    @Html.AntiForgeryToken()
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger text-center p-2 mb-3" style="font-size: 13px;">
+                            @Html.ValidationSummary(true, "")
+                        </div>
+                    }
+
+                    <div class="wrap-input100 validate-input" id="inp" data-validate="Enter user id">
+                        <input class="input100" type="text" name="UserId" placeholder="User ID" id="id" value="@Model?.UserId" required>
+                        <span class="focus-input100" data-placeholder="&#xf207;"></span>
+                    </div>
+                    <div class="wrap-input100 validate-input" data-validate="Enter username">
+                        <input class="input100" type="text" name="username" id="name" placeholder="Username" disabled>
+                        <span class="focus-input100" data-placeholder="&#xf207;"></span>
+                    </div>
+
+                    <div class="wrap-input100 validate-input" data-validate="Enter password">
+                        <input class="input100" type="password" id="pas" name="Password" placeholder="Password" required>
+                        <span class="focus-input100" data-placeholder="&#xf191;"></span>
+                    </div>
+
+                    <div class="container-login100-form-btn">
+                        <button type="submit" id="btnlogin" class="login100-form-btn" name="submit">
+                            Login
+                        </button>
+                    </div>
+
+                    <input type="hidden" name="checkUser" id="checkCustomer" value="0" />
+                    <input type="hidden" name="checkUser" id="checkAdmin" value="1" />
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="dropDownSelect1"></div>
+
+    <!-- Core & Vendor Scripts matching PHP login.php -->
+    <script src="@Url.Content("~/Content/loginpage/vendor/jquery/jquery-3.2.1.min.js")"></script>
+    <script src="@Url.Content("~/Content/loginpage/vendor/animsition/js/animsition.min.js")"></script>
+    <script src="@Url.Content("~/Content/loginpage/vendor/bootstrap/js/popper.min.js")"></script>
+    <script src="@Url.Content("~/Content/loginpage/vendor/bootstrap/js/bootstrap.min.js")"></script>
+    <script src="@Url.Content("~/Content/loginpage/vendor/select2/select2.min.js")"></script>
+    <script src="@Url.Content("~/Content/loginpage/vendor/daterangepicker/moment.min.js")"></script>
+    <script src="@Url.Content("~/Content/loginpage/vendor/daterangepicker/daterangepicker.js")"></script>
+    <script src="@Url.Content("~/Content/loginpage/vendor/countdowntime/countdowntime.js")"></script>
+    <script src="@Url.Content("~/Content/loginpage/js/main.js")"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="@Url.Content("~/Content/js/script.js?v=" + DateTime.UtcNow.Ticks)"></script>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <script>
+            $(document).ready(function() {
+                if (typeof hide === "function") {
+                    hide();
+                }
+            });
+        </script>
+    }
+</body>
+</html>

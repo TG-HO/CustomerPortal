@@ -1,0 +1,86 @@
+.canvasjs-chart-toolbar{
+    display: none !important;
+}
+.canvasjs-chart-credit{
+    display: none !important;
+}
+#chartContainer{
+    margin-top: 50px !important;
+    width: 500px !important;
+}
+#chartContainer2{
+    margin-top: 50px !important;
+    width: 500px !important;
+}
+.chart{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    position: absolute;
+    z-index: 1;
+
+}
+.test{
+    width: 65px;
+    height: 10px;
+    margin-top: 50px;
+    position: absolute;
+    z-index: 9999;
+    background-color: white;
+}
+.test2{
+    width: 80px;
+    height: 10px;
+    margin-top: 50px;
+    position: absolute;
+    margin-left: 36%;
+    z-index: 9999;
+    background-color: white;
+}
+.test3{
+    width: 65px;
+    height: 10px;
+    margin-top: 340px;
+    position: absolute;
+    z-index: 9999;
+    background-color: white;
+}
+.test4{
+    width: 80px;
+    height: 10px;
+    margin-top: 340px;
+    position: absolute;
+    margin-left: 36%;
+    z-index: 9999;
+    background-color: white;
+}
+
+.custOrderTab{
+    background-image: linear-gradient(top, #ED1C24, white);
+    box-shadow: 0px 4px 2px -1px gray;
+    color: #ED1C24 !important;
+}
+
+.custOrderTab3{
+    background-image: linear-gradient(top, #ED1C24, white);
+    box-shadow: 0px 4px 2px -1px gray;
+    color: #b6b6b6 !important;
+}
+
+.svg-inline--fa {
+    vertical-align: -2px !important;
+}
+
+.os_{
+    color: #087f8c !important;
+}
+
+@media screen and (max-width:600px){
+    #chartContainer,#chartContainer2{
+        margin-top: 70px !important;
+        width: 280px !important;
+        height: 220px !important;
+        /* border: 1px solid black; */
+    }
+
+}

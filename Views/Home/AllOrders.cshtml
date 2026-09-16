@@ -1,0 +1,124 @@
+@model IEnumerable<CustomerPortal_MVC_.Models.CustOrderTable>
+@{
+    ViewBag.Title = "All Orders";
+    ViewBag.ActiveMenu = "Orders";
+}
+
+@section styles {
+    <style>
+        .custOrderTab {
+            background-color: #ED1C24 !important;
+            color: white !important;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 12px 20px;
+            border-radius: 4px;
+            margin-bottom: 25px;
+        }
+        .head {
+            background-color: #ED1C24;
+            color: white;
+        }
+        .num {
+            font-weight: 500;
+        }
+    </style>
+}
+
+<div class="container-fluid">
+    <div class="alert custOrderTab">
+        <i class="fas fa-archive mr-2"></i> ALL ORDERS
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-sm mt-1 table-hover" id="tabAllOrders">
+            <thead class="head">
+                <tr class="table-bordered text-white text-center">
+                    <th scope="col">Purchase ID</th>
+                    <th scope="col">Site Name</th>
+                    <th scope="col">Product Code</th>
+                    <th scope="col">Product Name</th>
+                    <th scope="col">Ordered Qty</th>
+                    <th scope="col">Pending Qty</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Created Date</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var order in Model)
+                    {
+                        <tr class="text-black text-center">
+                            <td>
+                                <a href="@Url.Action("OpenOrderDetail", "Home", new { op = order.OrderPrefixId })" class="text-primary font-weight-bold">
+                                    @order.OrderPrefixId
+                                </a>
+                            </td>
+                            <td>@(order.Site ?? "-")</td>
+                            <td>@order.ProductCode</td>
+                            <td>@(order.ProductName ?? order.ProductCode)</td>
+                            <td class="num font-weight-bold">@order.RequiredQuantity.ToString("N0") L</td>
+                            <td class="num text-danger">@(order.PendingQty.HasValue ? order.PendingQty.Value.ToString("N0") : "0") L</td>
+                            <td>
+                                @if (order.CancelFlag == 1)
+                                {
+                                    <span class="badge badge-danger">Cancelled</span>
+                                }
+                                else if (order.ShippedFlag == 1 && order.ProfUploadFlag == 1)
+                                {
+                                    <span class="badge badge-success">Invoiced</span>
+                                }
+                                else if (order.ReleasedFlag == 1)
+                                {
+                                    <span class="badge badge-info">Released</span>
+                                }
+                                else if (order.HoldsFreeFlag == 1)
+                                {
+                                    <span class="badge badge-warning">Holds Free</span>
+                                }
+                                else if (order.PendingFlag == 1 || (order.PendingQty.HasValue && order.PendingQty.Value > 0))
+                                {
+                                    <span class="badge badge-secondary">Pending</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-dark">Open Order</span>
+                                }
+                            </td>
+                            <td class="num">@(order.OrderCreatedOn.HasValue ? order.OrderCreatedOn.Value.ToString("yyyy-MM-dd") : (order.OrderCreatedOnDateTime.HasValue ? order.OrderCreatedOnDateTime.Value.ToString("yyyy-MM-dd") : "-"))</td>
+                            <td>
+                                <a href="@Url.Action("OpenOrderDetail", "Home", new { op = order.OrderPrefixId })" class="btn btn-sm btn-outline-danger">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="9" class="text-center py-4 text-muted">No orders found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            if ($('#tabAllOrders tbody tr').length > 0 && !$('#tabAllOrders tbody tr td[colspan]').length) {
+                $('#tabAllOrders').DataTable({
+                    order: [[7, 'desc']],
+                    pageLength: 25,
+                    language: {
+                        search: "Search Orders:"
+                    }
+                });
+            }
+        });
+    </script>
+}

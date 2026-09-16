@@ -1,0 +1,51 @@
+@model CustomerPortal_MVC_.Models.ViewModels.OrderMergeViewModel
+@{
+    ViewBag.Title = "Merge Orders - Admin";
+    ViewBag.ActiveMenu = "MergeOrders";
+}
+
+<div class="container-fluid">
+    <div class="alert custOrderTab">
+        <i class="fa fa-compress mr-2"></i> MERGE ORDERS
+    </div>
+
+    <div class="card shadow border-0 max-w-700 mx-auto">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h5 class="m-0 font-weight-bold"><i class="fa fa-compress mr-2"></i>Merge Two Orders</h5>
+        </div>
+        <div class="card-body p-4">
+            @using (Html.BeginForm("MergeOrders", "Admin", FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+                <div class="form-group mb-3">
+                    @Html.LabelFor(m => m.Order1PrefixId, "Primary Order Prefix ID", new { @class = "font-weight-bold" })
+                    @Html.TextBoxFor(m => m.Order1PrefixId, new { @class = "form-control", @placeholder = "e.g. TG-20230510-101", @required = "required" })
+                    @Html.ValidationMessageFor(m => m.Order1PrefixId, "", new { @class = "text-danger small" })
+                </div>
+
+                <div class="form-group mb-3">
+                    @Html.LabelFor(m => m.Order2PrefixId, "Secondary Order Prefix ID (to merge into Primary)", new { @class = "font-weight-bold" })
+                    @Html.TextBoxFor(m => m.Order2PrefixId, new { @class = "form-control", @placeholder = "e.g. TG-20230510-102", @required = "required" })
+                    @Html.ValidationMessageFor(m => m.Order2PrefixId, "", new { @class = "text-danger small" })
+                </div>
+
+                <div class="form-group mb-4">
+                    @Html.LabelFor(m => m.MergedQty, "Merged Total Quantity (Liters)", new { @class = "font-weight-bold" })
+                    @Html.TextBoxFor(m => m.MergedQty, new { @class = "form-control", @type = "number", @placeholder = "Combined total volume" })
+                    @Html.ValidationMessageFor(m => m.MergedQty, "", new { @class = "text-danger small" })
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="@Url.Action("CustomerOrders", "Admin")" class="btn btn-outline-secondary">
+                        <i class="fa fa-arrow-left mr-1"></i> Back to Orders
+                    </a>
+                    <button type="submit" class="btn btn-danger px-4">
+                        <i class="fa fa-compress mr-1"></i> Merge Orders
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,85 @@
+@model CustomerPortal_MVC_.Models.ViewModels.ProformaUploadViewModel
+@{
+    ViewBag.Title = "Upload Proforma - Admin";
+    ViewBag.ActiveMenu = "CustomerOrders";
+}
+
+<div class="container-fluid">
+    <div class="alert custOrderTab">
+        <i class="fa fa-upload mr-2"></i> UPLOAD PROFORMA - CUSTOMER PORTAL [ @Model.OrderPrefixId ]
+    </div>
+
+    <div class="card shadow border-0 max-w-700 mx-auto">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h5 class="m-0 font-weight-bold"><i class="fa fa-file-pdf-o mr-2"></i>Attach Proforma Invoice</h5>
+            <span class="badge badge-danger">@Model.OrderPrefixId</span>
+        </div>
+        <div class="card-body p-4">
+            @using (Html.BeginForm("UploadProforma", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(m => m.OrderPrefixId)
+                @Html.HiddenFor(m => m.CustomerId)
+
+                @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+                <table class="table table-sm table-bordered mb-4">
+                    <tr>
+                        <td width="30%" class="font-weight-bold bg-light">Customer</td>
+                        <td>@Model.CustomerId</td>
+                    </tr>
+                    <tr>
+                        <td class="font-weight-bold bg-light">Order Number</td>
+                        <td class="text-danger font-weight-bold">@Model.OrderPrefixId</td>
+                    </tr>
+                    <tr>
+                        <td class="font-weight-bold bg-light">Upload Proforma</td>
+                        <td>
+                            <input type="file" class="form-control-file" id="ProformaFile" name="ProformaFile" required onchange="ValidateFileUpload();" />
+                            <small class="text-muted d-block mt-1">Accepted formats: PDF, JPG, PNG (Max 400 KB)</small>
+                            @Html.ValidationMessageFor(m => m.ProformaFile, "", new { @class = "text-danger small" })
+                        </td>
+                    </tr>
+                </table>
+
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="@Url.Action("CustomerOrders", "Admin")" class="btn btn-outline-secondary">
+                        <i class="fa fa-arrow-left mr-1"></i> Back to Orders
+                    </a>
+                    <button type="submit" class="btn btn-danger px-4" id="btnUpload">
+                        <i class="fa fa-upload mr-1"></i> Update & Upload
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        function ValidateFileUpload() {
+            var fuData = document.getElementById('ProformaFile');
+            var FileUploadPath = fuData.value;
+
+            if (FileUploadPath == '') {
+                alert("Please upload an image or PDF");
+            } else {
+                var Extension = FileUploadPath.substring(FileUploadPath.lastIndexOf('.') + 1).toLowerCase();
+                if (Extension == "png" || Extension == "jpeg" || Extension == "jpg" || Extension == "pdf") {
+                    if (fuData.files && fuData.files[0]) {
+                        var size = fuData.files[0].size;
+                        if (size > 409600) { // 400 KB
+                            alert("Maximum file size 400 KB allowed");
+                            fuData.value = '';
+                            return;
+                        }
+                    }
+                } else {
+                    alert("Only PDF, PNG, JPG, or JPEG file formats are allowed.");
+                    fuData.value = '';
+                    return;
+                }
+            }
+        }
+    </script>
+}

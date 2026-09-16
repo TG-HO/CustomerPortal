@@ -1,0 +1,185 @@
+@model IEnumerable<CustomerPortal_MVC_.Models.LubricantOrderFinal>
+@{
+    ViewBag.Title = "Admin - Submitted Lubricant Orders";
+    ViewBag.ActiveMenu = "Lubricants";
+}
+
+@section styles {
+    <style>
+        .custOrderTab {
+            background-color: #ED1C24 !important;
+            color: white !important;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 12px 20px;
+            border-radius: 4px;
+            margin-bottom: 25px;
+        }
+        .head {
+            background-color: #ED1C24;
+            color: white;
+        }
+        .num {
+            font-weight: 500;
+        }
+    </style>
+}
+
+<div class="container-fluid">
+    <div class="alert custOrderTab shadow-sm">
+        <i class="fas fa-tasks mr-2"></i> ADMIN - SUBMITTED LUBRICANT ORDERS
+    </div>
+
+    @Html.AntiForgeryToken()
+
+    <div class="table-responsive">
+        <table class="table table-sm mt-1 table-hover" id="tabAdminLube">
+            <thead class="head">
+                <tr class="table-bordered text-white text-center">
+                    <th scope="col">Line #</th>
+                    <th scope="col">Order Ref</th>
+                    <th scope="col">Customer</th>
+                    <th scope="col">Site</th>
+                    <th scope="col">Product Name</th>
+                    <th scope="col">Qty</th>
+                    <th scope="col">Rate</th>
+                    <th scope="col">Total Amount</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Submitted On</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var line in Model)
+                    {
+                        <tr class="text-black text-center" id="row-@line.LineNumber">
+                            <td>@line.LineNumber</td>
+                            <td class="font-weight-bold text-primary">@line.OrderHeadRef</td>
+                            <td>@line.CustomerCode</td>
+                            <td>@(line.SiteName ?? line.CustSite)</td>
+                            <td>@(line.ProductName ?? line.ProductCode)</td>
+                            <td class="num">@(line.RequiredQty?.ToString("N0") ?? "-")</td>
+                            <td class="num">@(line.ProductRates?.ToString("N2") ?? "-")</td>
+                            <td class="num font-weight-bold">@(line.TotalAmount?.ToString("N2") ?? "-")</td>
+                            <td>
+                                @if (line.OrderStatus == "UPLOADED" || line.OrderStatus == "APPROVED")
+                                {
+                                    <span class="badge badge-success">@line.OrderStatus</span>
+                                }
+                                else if (line.OrderStatus == "CANCELLED")
+                                {
+                                    <span class="badge badge-danger">@line.OrderStatus</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-warning">@(line.OrderStatus ?? "PENDING")</span>
+                                }
+                            </td>
+                            <td class="num">@(line.CreatedOnDateTime.HasValue ? line.CreatedOnDateTime.Value.ToString("yyyy-MM-dd") : "-")</td>
+                            <td>
+                                @if (line.OrderStatus != "CANCELLED")
+                                {
+                                    <button class="btn btn-sm btn-success mr-1" onclick="updateStatus(@line.LineNumber, 'UPLOADED')">
+                                        <i class="fas fa-check"></i> Approve
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" onclick="cancelOrder(@line.LineNumber)">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </button>
+                                }
+                                else
+                                {
+                                    <span class="text-muted small">None</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="11" class="text-center py-4 text-muted">No lubricant orders awaiting admin processing.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section scripts {
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function getAntiForgeryToken() {
+            return $('input[name="__RequestVerificationToken"]').val();
+        }
+
+        function updateStatus(id, status) {
+            Swal.fire({
+                title: 'Approve Order',
+                text: 'Are you sure you want to mark this lubricant order as ' + status + '?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                confirmButtonText: 'Yes, Approve'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("AdminUpdateStatus", "Lubricants")',
+                        type: 'POST',
+                        data: {
+                            __RequestVerificationToken: getAntiForgeryToken(),
+                            id: id,
+                            status: status
+                        },
+                        success: function (res) {
+                            if (res.success) {
+                                Swal.fire('Success', res.message, 'success').then(() => location.reload());
+                            } else {
+                                Swal.fire('Error', res.message, 'error');
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        function cancelOrder(id) {
+            Swal.fire({
+                title: 'Cancel Order',
+                text: 'Are you sure you want to cancel this lubricant order line?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ED1C24',
+                confirmButtonText: 'Yes, Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '@Url.Action("AdminCancel", "Lubricants")',
+                        type: 'POST',
+                        data: {
+                            __RequestVerificationToken: getAntiForgeryToken(),
+                            id: id
+                        },
+                        success: function (res) {
+                            if (res.success) {
+                                Swal.fire('Cancelled', res.message, 'success').then(() => location.reload());
+                            } else {
+                                Swal.fire('Error', res.message, 'error');
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            if ($('#tabAdminLube tbody tr').length > 0 && !$('#tabAdminLube tbody tr td[colspan]').length) {
+                $('#tabAdminLube').DataTable({
+                    order: [[0, 'desc']],
+                    pageLength: 25
+                });
+            }
+        });
+    </script>
+}

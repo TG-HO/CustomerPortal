@@ -1,0 +1,270 @@
+@model CustomerPortal_MVC_.Models.ViewModels.DashboardSummaryViewModel
+@{
+    ViewBag.Title = "Home - Customer Portal";
+    ViewBag.ActiveMenu = "Home";
+}
+
+@section styles {
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/charts.css")">
+    <style>
+        .custOrderTab {
+            background-color: #ED1C24 !important;
+            color: white !important;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 12px 20px;
+            border-radius: 4px;
+            margin-bottom: 25px;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 10px;
+            border: none;
+            position: relative;
+            margin-bottom: 30px;
+            box-shadow: 0 0.46875rem 2.1875rem rgba(90,97,105,0.1), 0 0.9375rem 1.40625rem rgba(90,97,105,0.1), 0 0.25rem 0.53125rem rgba(90,97,105,0.12), 0 0.125rem 0.1875rem rgba(90,97,105,0.1);
+        }
+        .l-bg-cherry {
+            background-size: 100%;
+            background-image: linear-gradient(to right, #493240, #ff101f) !important;
+            cursor: pointer;
+            position: relative;
+            z-index: 100;
+            transition: opacity 500ms ease-out;
+        }
+        .l-bg-cherry:hover {
+            opacity: 0.95;
+        }
+        .l-bg-blue-dark {
+            background: linear-gradient(to right, #373b44, #4286f4) !important;
+            color: #fff;
+        }
+        .l-bg-green-dark {
+            background: linear-gradient(to right, #0a504a, #38ef7d) !important;
+            color: #fff;
+        }
+        .l-bg-orange-dark {
+            background: linear-gradient(to right, #a86008, #ffba56) !important;
+            color: #fff;
+        }
+        .l-bg-purple-dark {
+            background: linear-gradient(326deg, #a4508b 0%, #5f0a87 74%) !important;
+            color: #fff;
+        }
+        .card .card-statistic-3 .card-icon-large .fas {
+            font-size: 80px;
+        }
+        .card .card-statistic-3 .card-icon {
+            text-align: center;
+            line-height: 50px;
+            margin-left: 15px;
+            color: #fff;
+            position: absolute;
+            right: 15px;
+            top: 20px;
+            opacity: 0.25;
+        }
+        .orderHover {
+            text-decoration: none !important;
+        }
+        .alert-white {
+            background: #fff;
+            border-left: 5px solid #4d90fd;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            padding: 20px;
+            position: relative;
+        }
+        .alert-white .icon {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #4d90fd;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .alert-content-pad {
+            padding-left: 60px;
+        }
+        .custOrderTab2 table {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .pipeline-header {
+            background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(121,9,21,1) 91%, rgba(0,0,0,1) 100%);
+            color: white !important;
+        }
+    </style>
+}
+
+<div class="container-fluid mt-3">
+    <div class="alert custOrderTab shadow-sm">
+        <i class="fas fa-tachometer-alt mr-2"></i> ORDER MANAGEMENT - DASHBOARD
+    </div>
+
+    <!-- 5 Gradient Metric Cards -->
+    <div class="row">
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <a class="card l-bg-cherry text-white orderHover h-100" href="@Url.Action("OrderNow", "Order")">
+                <div class="card-statistic-3 p-4">
+                    <div class="card-icon card-icon-large"><i class="fas fa-shopping-cart"></i></div>
+                    <div class="mb-3">
+                        <h5 class="card-title mb-0 text-white font-weight-bold">Order Now</h5>
+                    </div>
+                    <div class="row align-items-center mb-2 d-flex">
+                        <div class="col-12">
+                            <h4 class="mb-0 text-white font-weight-bold">Let's Crown Your Journey</h4>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-xl-2 col-lg-6 col-md-6 mb-3">
+            <div class="card l-bg-blue-dark h-100">
+                <div class="card-statistic-3 p-4">
+                    <div class="card-icon card-icon-large"><i class="fas fa-coins"></i></div>
+                    <div class="mb-3">
+                        <h6 class="card-title mb-0 text-white">Customer Balance</h6>
+                    </div>
+                    <div class="row align-items-center mb-2 d-flex">
+                        <div class="col-12">
+                            <h3 class="mb-0 text-white font-weight-bold">@Model.CurrentBalance.ToString("N0")</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-lg-6 col-md-6 mb-3">
+            <div class="card l-bg-green-dark h-100">
+                <div class="card-statistic-3 p-4">
+                    <div class="card-icon card-icon-large"><i class="fas fa-credit-card"></i></div>
+                    <div class="mb-3">
+                        <h6 class="card-title mb-0 text-white">Customer Credit Limit</h6>
+                    </div>
+                    <div class="row align-items-center mb-2 d-flex">
+                        <div class="col-12">
+                            <h3 class="mb-0 text-white font-weight-bold">@Model.CreditLimit.ToString("N0")</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+            <div class="card l-bg-purple-dark h-100">
+                <div class="card-statistic-3 p-4">
+                    <div class="card-icon card-icon-large"><i class="fas fa-money-check-alt"></i></div>
+                    <div class="mb-3">
+                        <h6 class="card-title mb-0 text-white">Amount to be Delivered</h6>
+                    </div>
+                    <div class="row align-items-center mb-2 d-flex">
+                        <div class="col-12">
+                            <h3 class="mb-0 text-white font-weight-bold">@Model.AmountToBeDelivered.ToString("N0")</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-lg-6 col-md-6 mb-3">
+            <div class="card l-bg-orange-dark h-100">
+                <div class="card-statistic-3 p-4">
+                    <div class="card-icon card-icon-large"><i class="fas fa-dollar-sign"></i></div>
+                    <div class="mb-3">
+                        <h6 class="card-title mb-0 text-white">Available Credit Limit</h6>
+                    </div>
+                    <div class="row align-items-center mb-2 d-flex">
+                        <div class="col-12">
+                            <h3 class="mb-0 text-white font-weight-bold">@Model.AvailableCreditLimit.ToString("N0")</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Welcome & Fuel Indent Rates Banner -->
+    <div class="alert alert-white rounded mb-4">
+        <div class="icon">
+            <i class="fa fa-info-circle fa-2x text-white"></i>
+        </div>
+        <div class="alert-content-pad">
+            <span class="lead">Welcome, <strong class="text-dark">@Model.CustomerName</strong> ..!</span>
+            <hr class="my-3">
+            <div class="rates-block text-secondary">
+                <p class="mb-1"><i class="fas fa-gas-pump mr-2 text-danger"></i> Indent rate for High Speed Diesel : <strong class="text-dark">@Model.DealerRatesHsd.ToString("N2")</strong></p>
+                <p class="mb-1"><i class="fas fa-oil-can mr-2 text-warning"></i> Indent rate for Premier Motor Gasoline : <strong class="text-dark">@Model.DealerRatesPmg.ToString("N2")</strong></p>
+                <p class="mb-0"><i class="fas fa-oil-can mr-2 text-info"></i> Indent rate for HOBC : <strong class="text-dark">@Model.DealerRatesHobc.ToString("N2")</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Pipeline Columns -->
+    <div class="custOrderTab2 mb-5">
+        <table class="table table-bordered bg-white shadow-sm">
+            <thead>
+                <tr class="pipeline-header">
+                    <th class="text-center text-white p-3">Submitted Pending<br /><span class="badge badge-light mt-1">(@Model.PendingOrdersCount)</span></th>
+                    <th class="text-center text-white p-3">Submitted HoldsFree<br /><span class="badge badge-light mt-1">(@(Model.TotalHoldsFreeBalance > 0 ? "1" : "0"))</span></th>
+                    <th class="text-center text-white p-3">Being Scheduled<br /><span class="badge badge-light mt-1">(0)</span></th>
+                    <th class="text-center text-white p-3">Shipping<br /><span class="badge badge-light mt-1">(0)</span></th>
+                    <th class="text-center text-white p-3">Delivered<br /><span class="badge badge-light mt-1">(@Model.InvoicedOrdersCount)</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td width="20%" class="text-center p-3 align-top">
+                        @if (Model.PendingOrdersCount > 0)
+                        {
+                            <div class="card border border-danger mb-2 p-2 shadow-sm">
+                                <span class="text-danger font-weight-bold">@Model.PendingOrdersCount Order(s)</span>
+                                <a href="@Url.Action("PendingOrders", "Home")" class="text-danger small mt-1 font-weight-bold">To be confirmed</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="text-muted small">No pending orders</span>
+                        }
+                    </td>
+                    <td width="20%" class="text-center p-3 align-top">
+                        @if (Model.TotalHoldsFreeBalance > 0)
+                        {
+                            <div class="card border border-success mb-2 p-2 shadow-sm">
+                                <span class="text-success font-weight-bold">@Model.TotalHoldsFreeBalance.ToString("N0") L</span>
+                                <a href="@Url.Action("OpenOrders", "Home")" class="text-success small mt-1 font-weight-bold">HoldsFree Active</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="text-muted small">No holdsfree orders</span>
+                        }
+                    </td>
+                    <td width="20%" class="text-center p-3 align-top">
+                        <span class="text-muted small">No scheduled orders</span>
+                    </td>
+                    <td width="20%" class="text-center p-3 align-top">
+                        <span class="text-muted small">No orders in transit</span>
+                    </td>
+                    <td width="20%" class="text-center p-3 align-top">
+                        @if (Model.InvoicedOrdersCount > 0)
+                        {
+                            <div class="card border border-primary mb-2 p-2 shadow-sm">
+                                <span class="text-primary font-weight-bold">@Model.InvoicedOrdersCount Order(s)</span>
+                                <a href="@Url.Action("InvoicedOrders", "Home")" class="text-primary small mt-1 font-weight-bold">View Invoiced</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <span class="text-muted small">No delivered orders</span>
+                        }
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

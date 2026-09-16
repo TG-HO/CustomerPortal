@@ -1,0 +1,279 @@
+@import url('https://fonts.googleapis.com/css2?family=Russo+One&display=swap');
+
+@font-face { 
+    font-family: headingfont !important;
+    src: url("../fonts/Neutraface2Display-Titling.otf");
+}
+    
+body{
+    font-family: 'Neutra Text', sans-serif !important;
+}
+
+
+h1,h2,h3,h4,h5,h6{
+    /* font-family: 'Russo One', sans-serif     !important; */
+    /* font-family: 'Neutra Text', sans-serif !important; */
+    /* font-weight: 700; */
+    font-family: 'Neutra Display' !important;
+
+}
+.navbar-brand img{
+    width:50px !important;
+    height: 40px !important;
+}
+.logo img{
+    width:80px;
+    height:80px;
+}
+
+.navlogin{
+    color: white;
+    /* border-bottom:1px solid #746f6D; */
+    border-bottom:1px solid white;
+    height: 70px;
+    /* margin-top: 10px; */
+    width: 100%;
+    
+}
+.navli{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.navli img{
+    /* margin-left: 30px; */
+    /* margin-top: 10px; */
+    /* margin-left: 15px !important; */
+    width:70px !important;
+    height:60px !important;
+    /* margin-top: 5px; */
+    margin-left: 15px;
+    margin-bottom: 3px;
+    margin-top: 3px;
+
+}
+.portal{
+    margin-right: 15px !important;
+    margin-top: 30px;
+    font-size: 14px;
+}
+.message{
+    /* border: 1px solid black; */
+    height: 150px;
+    width:350px;
+    margin-left: 60px;
+    color: white;
+    /* margin-bottom: 60px; */
+    
+}
+/* @font-face {font-family: "Neutraface 2 Display Inline"; src: url("//db.onlinewebfonts.com/t/0d2703af1d063ee7547a5e8a189bdb8f.eot"); src: url("//db.onlinewebfonts.com/t/0d2703af1d063ee7547a5e8a189bdb8f.eot?#iefix") format("embedded-opentype"), url("//db.onlinewebfonts.com/t/0d2703af1d063ee7547a5e8a189bdb8f.woff2") format("woff2"), url("//db.onlinewebfonts.com/t/0d2703af1d063ee7547a5e8a189bdb8f.woff") format("woff"), url("//db.onlinewebfonts.com/t/0d2703af1d063ee7547a5e8a189bdb8f.ttf") format("truetype"), url("//db.onlinewebfonts.com/t/0d2703af1d063ee7547a5e8a189bdb8f.svg#Neutraface 2 Display Inline") format("svg"); } */
+@font-face {
+    font-family: NeutraDisplay;
+    src: url('../fonts/Neutra\ Display\ Titling.otf');
+}
+.message h3{
+
+    line-height: 1.5;
+    font-size: 40px;
+    font-family: NeutraDisplay !important;
+    /* font-family: "Neutraface 2 Display Inline" !important; */
+    /* font-weight: 800; */
+}
+
+.message button{
+    background: red;
+    color: white;
+    width:80px;
+    font-size: 12px;
+    margin-left: 5px;
+    /* text-align: left; */
+}
+
+.formbut{
+    /* border: 1px solid black; */
+    width:120px;
+    height:50px;
+    margin-top: 250px;
+    margin-left: 180px;
+}
+
+.formbut button{
+    color: white;
+    background: red;
+    padding:3px;
+    width:200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* font-family: Poppins-Medium; */
+    font-size: 16px;
+    line-height: 1.2;
+
+}
+#inp{
+    margin-top: 50px;
+}
+
+
+/* .swal-modal{
+ width: 300px !important;
+ height: 200px !important;
+}
+.swal-title{
+    font-weight: 300 !important;
+    padding: 6px 9px !important;
+    font-size: 16px !important;
+}
+.swal-icon--error{
+
+} */
+
+
+.swal-button{
+    background-color: #ED1C24;
+    border-radius: 0px;
+    font-size: 20px;
+    padding: 2px 11px;
+
+}
+.swal-button:hover{
+    background-color: red !important;
+}
+.swal-footer{
+    text-align: center;
+}
+.swal-icon{
+    border-style:none;
+    
+}
+.swal-modal{
+
+}
+.swal-icon:first-child{
+margin-top: 0px;
+}
+.swal-icon--error__line--left,.swal-icon--error__line--right{
+    visibility: hidden;
+}
+.swal-title{
+    padding: 0px 16px;
+}
+
+/* media query  */
+/* media query  */
+/* iphone 5/se  */
+@media screen and (min-width:320px)
+and (max-width:374px){
+    .message{
+    margin-top: 20px;
+    font-size: 12px;
+    margin-left: 5px;
+    width:230px;
+
+    }   
+    .formbut{
+        margin:0;
+        margin-left: 80px;
+        margin-bottom: -80px;
+    }
+    .message h3{
+        font-size: 24px;
+
+    }
+    .formbut button{
+        width:150px;
+        height: 23px;
+        margin-top: 170px;
+    }
+    .navli img{
+        /* margin-left: 30px; */
+        /* margin-top: 10px; */
+        margin-left: 3px;
+        width:75px;
+        height:65px;
+    }
+    .portal{
+        margin-left: -5px;
+        /* margin-top: 30px; */
+        margin-right: 10px;
+        font-size: 14px;
+    }
+    .navlogin{
+        border-bottom: none;
+        border-bottom: 1px solid white;
+        width: 100%;
+        height: 75px;
+    }
+    .wrap-login100{
+        width: 285px;
+        overflow: hidden;
+        padding: 13px;
+        height: 300px;
+        margin-left:14px;
+        margin-bottom: 100px;
+      }
+      .login100-form-btn{
+        margin-top: -50px;
+      }
+      .message button{
+          width: 60px;
+      }
+      .message button a{
+          font-size: 10px;
+      }
+
+}
+
+/* iphone 6 7 8   */
+@media screen and (min-width:375px)
+and (max-width:413px){
+    .message{
+        margin-left: 5px;
+        margin-top: 40px;
+    }   
+    .message h3{
+        font-size: 26px;
+    }
+    .formbut{
+        margin-left: 90px;
+        margin-top: 20px;
+    }
+    .formbut button{
+        margin-top: 200px;
+    }
+    .wrap-login100{
+        padding-top: 10px;
+        margin-left: 40px;
+        width:300px;
+        margin-bottom: 120px;
+        }
+    
+}
+
+/* iphone 6 7 8 plus  */
+@media screen and (min-width:414px)
+and (max-width:766px){
+    .message{
+        margin-top: 40px;
+        font-size: 12px;
+        margin-left: 5px;
+        width:300px;
+        } 
+    
+    .message h3{
+        font-size: 30px;
+    }
+    .formbut{
+        margin-left: 100px ;
+        margin-top: 40px;
+    }
+    .formbut button{
+        margin-top: 200px;
+    }
+    .wrap-login100{
+        padding-top: 10px;
+        margin-left: 40px;
+        width:330px;
+        margin-bottom: 120px;
+        }
+}

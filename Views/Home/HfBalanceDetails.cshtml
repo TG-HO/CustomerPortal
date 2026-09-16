@@ -1,0 +1,70 @@
+@model IEnumerable<CustomerPortal_MVC_.Models.CustOrderTable>
+@{
+    ViewBag.Title = "HoldsFree But Not Shipped Details";
+    ViewBag.ActiveMenu = "Orders";
+}
+
+<div class="container-fluid">
+    <div class="alert custOrderTab">
+        <i class="fas fa-cube"></i> HOLDSFREE BUT NOT SCHEDULED
+    </div>
+
+    <table class="table-borderless table-light table-sm mb-3" style="box-shadow: 0 4px 2px -2px gray;">
+        <tr>
+            <th class="p-2">Customer ID</th>
+            <td class="p-2">@CustomerPortal_MVC_.Helpers.UserSession.UserId</td>
+
+            <th class="p-2">Customer Name</th>
+            <td class="p-2">@CustomerPortal_MVC_.Helpers.UserSession.CustomerName</td>
+
+            <th class="p-2">Product Name</th>
+            <td class="p-2">@ViewBag.ProductName</td>
+
+            <th class="p-2">Pending Orders</th>
+            <td class="p-2">@(Model != null ? Model.Count() : 0)</td>
+        </tr>
+    </table>
+
+    <div class="table-responsive">
+        <table class="table table-sm mt-1 table-hover" id="tab">
+            <thead class="head">
+                <tr class="table-bordered text-black text-center">
+                    <th scope="col">ORDER ID</th>
+                    <th scope="col">ORDER DATE</th>
+                    <th scope="col">PRODUCT</th>
+                    <th scope="col">ORDERED QTY</th>
+                    <th scope="col">HOLDFREE QTY</th>
+                    <th scope="col">RELEASED QTY</th>
+                    <th scope="col">HOLDFREE BALANCE</th>
+                    <th scope="col">UNIT</th>
+                    <th scope="col">TANK LORRY</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var order in Model)
+                    {
+                        <tr class="text-black text-center">
+                            <td>@order.OrderPrefixId</td>
+                            <td>@(order.OrderCreatedOn.HasValue ? order.OrderCreatedOn.Value.ToString("yyyy-MM-dd") : "-")</td>
+                            <td>@(order.ProductName ?? order.ProductCode)</td>
+                            <td>@order.RequiredQuantity.ToString("N0")</td>
+                            <td>@order.HoldFreeQty.ToString("N0")</td>
+                            <td>@(order.ReleaseQty.HasValue ? order.ReleaseQty.Value.ToString("N0") : "0")</td>
+                            <td class="text-danger font-weight-bold">@order.HoldsFreeBalance.ToString("N0")</td>
+                            <td>@(order.Unit ?? "L")</td>
+                            <td>@(order.CarrierCode ?? "N/A")</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="9" class="text-center py-4 text-muted">No partial holdsfree orders found for this product.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

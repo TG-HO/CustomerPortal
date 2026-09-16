@@ -1,0 +1,65 @@
+@model IEnumerable<CustomerPortal_MVC_.Models.CustOrderTable>
+@{
+    ViewBag.Title = "Invoiced Orders";
+    ViewBag.ActiveMenu = "InvoicedOrders";
+}
+
+<div class="container-fluid">
+    <div class="alert custOrderTab">
+        <i class="fas fa-file-invoice"></i> INVOICED ORDERS
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-sm mt-1 table-hover" id="tab">
+            <thead class="head">
+                <tr class="table-bordered text-black text-center">
+                    <th scope="col">Purchase ID</th>
+                    <th scope="col">Product</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Site</th>
+                    <th scope="col">Created Date</th>
+                    <th scope="col">Proforma</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var order in Model)
+                    {
+                        <tr class="text-black text-center">
+                            <td>
+                                <a href="@Url.Action("InvoiceOrderDetail", "Home", new { op = order.OrderPrefixId })" class="text-primary font-weight-bold">
+                                    @order.OrderPrefixId
+                                </a>
+                            </td>
+                            <td>@(order.ProductName ?? order.ProductCode)</td>
+                            <td>@order.RequiredQuantity.ToString("N0") L</td>
+                            <td><span class="badge badge-success">INVOICED</span></td>
+                            <td>@(order.Site ?? "-")</td>
+                            <td>@(order.OrderCreatedOn.HasValue ? order.OrderCreatedOn.Value.ToString("yyyy-MM-dd") : "-")</td>
+                            <td>
+                                @if (order.ProfUploadFlag == 1 && !string.IsNullOrEmpty(order.ProfDocument))
+                                {
+                                    <a href="@Url.Content("~/Content/uploads/" + order.ProfDocument)" target="_blank" class="btn btn-sm btn-outline-primary">
+                                        <i class="fa fa-download mr-1"></i> Invoice
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">N/A</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">No invoiced orders found in the last 40 days.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

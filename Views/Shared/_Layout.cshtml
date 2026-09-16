@@ -1,0 +1,279 @@
+@using CustomerPortal_MVC_.Helpers
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>@(ViewBag.Title ?? "Taj Gasoline - Customer Portal")</title>
+
+    <!-- Root Favicon & Manifest -->
+    <link rel="shortcut icon" href="@Url.Content("~/favicon.ico")" type="image/x-icon" />
+    <link rel="apple-touch-icon" sizes="180x180" href="@Url.Content("~/apple-touch-icon.png")" />
+    <link rel="icon" type="image/png" sizes="32x32" href="@Url.Content("~/favicon-32x32.png")" />
+    <link rel="icon" type="image/png" sizes="16x16" href="@Url.Content("~/favicon-16x16.png")" />
+    <link rel="manifest" href="@Url.Content("~/site.webmanifest")" />
+
+    <!-- CSS Assets directly referenced matching PHP source -->
+    <link rel="stylesheet" href="@Url.Content("~/Content/assets/bootstrap-4.3.1-dist/css/bootstrap.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/assets/fontawesome-free-5.15.3-web/css/all.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/assets/font-awesome-4.7.0/css/font-awesome.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/assets/DataTables2/DataTables-1.10.25/css/jquery.dataTables.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/assets/DataTables2/Buttons-1.7.1/css/buttons.bootstrap4.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/assets/DataTables2/Buttons-1.7.1/css/buttons.dataTables.css")" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/css/home.css")" />
+    
+    @if (UserSession.IsAdmin)
+    {
+        <link rel="stylesheet" href="@Url.Content("~/Content/adminPanel/sidebar-01/css/style.css")" />
+        <link rel="stylesheet" href="@Url.Content("~/Content/css/admin.css")" />
+        <style>
+            #sidebar { background-color: #d1d1d1 !important; }
+            #sidebar li a:hover { color: red !important; }
+            .bg-dark { background-color: #343a40 !important; }
+        </style>
+    }
+
+    @RenderSection("styles", required: false)
+</head>
+<body>
+    @if (UserSession.IsAuthenticated)
+    {
+        if (UserSession.IsAdmin)
+        {
+            <!-- Admin Layout matching CustomerPortal_Live/pages/admin.php -->
+            <div class="wrapper d-flex align-items-stretch">
+                <nav id="sidebar">
+                    <div class="p-4 pt-5">
+                        <a href="@Url.Action("Index", "Admin")" class="img logo mb-4" style="background-image: url('@Url.Content("~/Content/icon/login.png")'); background-size: contain; background-repeat: no-repeat; display: block; height: 70px;"></a>
+                        
+                        <div class="mb-4 text-center">
+                            <small class="text-muted">Administrator</small><br />
+                            <strong class="text-dark">@UserSession.Username</strong>
+                        </div>
+
+                        <ul class="list-unstyled components mb-5">
+                            <li class="@(ViewBag.ActiveMenu == "AdminOrders" ? "active" : "")">
+                                <a href="@Url.Action("CustomerOrders", "Admin")">Customer Orders</a>
+                            </li>
+                            <li class="@(ViewBag.ActiveMenu == "AdminDashboard" ? "active" : "")">
+                                <a href="@Url.Action("Index", "Admin")">HoldFree Orders</a>
+                            </li>
+                            <li class="@(ViewBag.ActiveMenu == "ScheduledOrders" ? "active" : "")">
+                                <a href="@Url.Action("Approve", "Admin")">Scheduled Orders</a>
+                            </li>
+                            <li class="@(ViewBag.ActiveMenu == "MergeOrders" ? "active" : "")">
+                                <a href="@Url.Action("MergeOrders", "Admin")">Merge Orders</a>
+                            </li>
+                            <li class="@(ViewBag.ActiveMenu == "RevertOrders" ? "active" : "")">
+                                <a href="@Url.Action("RevertOrders", "Admin")">Revert Orders</a>
+                            </li>
+                            <li class="@(ViewBag.ActiveMenu == "CancelOrders" ? "active" : "")">
+                                <a href="@Url.Action("CancelOrders", "Admin")">Cancel Orders</a>
+                            </li>
+                            <li class="@(ViewBag.ActiveMenu == "CustomerPayments" ? "active" : "")">
+                                <a href="@Url.Action("CustomerPayments", "Admin")">Customer Payments</a>
+                            </li>
+                            @if (UserSession.LubricantFlag == "1" || UserSession.LubricantFlag == "2")
+                            {
+                                <li class="@(ViewBag.ActiveMenu == "LubeAdmin" ? "active" : "")">
+                                    <a href="@Url.Action("AdminSubmittedOrders", "Lubricants")" class="bg-warning text-dark font-weight-bold">Lubricant Submitted Orders</a>
+                                </li>
+                            }
+                            <li class="mt-4">
+                                <a href="@Url.Action("Logout", "Account")" class="text-danger"><i class="fa fa-sign-out mr-2"></i>Logout</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+
+                <div id="content" class="p-4 p-md-5 w-100">
+                    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 rounded">
+                        <div class="container-fluid">
+                            <button type="button" id="sidebarCollapse" class="btn btn-danger">
+                                <i class="fa fa-bars"></i>
+                                <span class="sr-only">Toggle Menu</span>
+                            </button>
+                            <div class="ml-auto d-flex align-items-center">
+                                <span class="text-white mr-3 font-weight-bold">@UserSession.Username</span>
+                                <a href="@Url.Action("Logout", "Account")" class="btn btn-sm btn-outline-danger">Logout</a>
+                            </div>
+                        </div>
+                    </nav>
+
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fa fa-check-circle mr-2"></i>@TempData["SuccessMessage"]
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    }
+
+                    @RenderBody()
+                </div>
+            </div>
+        }
+        else
+        {
+            <!-- Customer Portal Layout matching CustomerPortal_Live/pages/navbar.php -->
+            <div class="container-fluid p-0">
+                <!-- Main Header Nav -->
+                <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom px-3 py-2">
+                    <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+                        <img src="@Url.Content("~/Content/icon/login.png")" alt="Taj Gasoline" class="d-inline-block">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#topNavContent" aria-controls="topNavContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="topNavContent">
+                        <ul class="navbar-nav ml-auto align-items-center">
+                            <li class="nav-item active">
+                                <span class="nav-link font-weight-bold text-danger" style="cursor: default;">@(UserSession.CustomerName ?? UserSession.Username)</span>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" id="userMenuDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <div class="user">
+                                        <i class="fas fa-cog fa-lg text-secondary"></i>
+                                    </div>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-right shadow-sm" aria-labelledby="userMenuDropdown">
+                                    <span class="dropdown-item text-muted small"><i class="fas fa-angle-right text-danger mr-2"></i>@UserSession.Username</span>
+                                    <a class="dropdown-item" href="@Url.Action("ChangePassword", "Account")"><i class="fas fa-angle-right text-danger mr-2"></i>Change Password</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item text-danger" href="@Url.Action("Logout", "Account")"><i class="fas fa-sign-out-alt text-danger mr-2"></i>Logout</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+
+                <!-- Sub Navigation Bar (#nav2) -->
+                <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-3 px-3 py-1" id="nav2">
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#subNavContent" aria-controls="subNavContent" aria-expanded="false" aria-label="Toggle subnav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="subNavContent">
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark font-weight-bold" href="@Url.Action("Index", "Home")">Home</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" id="ordersDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Order Details
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-left shadow-sm" aria-labelledby="ordersDropdown">
+                                    <a class="dropdown-item" href="@Url.Action("AllOrders", "Home")"><i class="fas fa-angle-right text-danger mr-2"></i>All Orders</a>
+                                    <a class="dropdown-item" href="@Url.Action("OpenOrders", "Home")"><i class="fas fa-angle-right text-danger mr-2"></i>Open Orders</a>
+                                    <a class="dropdown-item" href="@Url.Action("InvoicedOrders", "Home")"><i class="fas fa-angle-right text-danger mr-2"></i>Invoiced Orders</a>
+                                    <a class="dropdown-item" href="@Url.Action("PendingOrders", "Home")"><i class="fas fa-angle-right text-danger mr-2"></i>Pending Orders</a>
+                                    <a class="dropdown-item" href="@Url.Action("OrderNow", "Order")"><i class="fas fa-angle-right text-danger mr-2"></i>Order Now</a>
+                                    <a class="dropdown-item" href="@Url.Action("OpenOrders", "Home")"><i class="fas fa-angle-right text-danger mr-2"></i>Open Purchase Order</a>
+                                    <a class="dropdown-item" href="@Url.Action("InvoicedOrders", "Home")"><i class="fas fa-angle-right text-danger mr-2"></i>Completed Purchase Orders</a>
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" href="@Url.Action("OrderNow", "Order")">Order Now</a>
+                            </li>
+                            <li class="nav-item">
+                                <button type="button" class="nav-link text-dark btn btn-link" id="ledger" onclick="window.open('http://125.209.99.213/ReportServer/Pages/ReportViewer.aspx?%2fAXReports%2fpartycustomerledgernew&rs:Command=Render&rc:Parameters=false&GC=@UserSession.UserId', '_blank')">Ledger Reports</button>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" href="@Url.Action("CustomerTransaction", "Home")">Customer Transaction</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" id="balance" href="javascript:void(0);">Customer Balance</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" id="customerDeposit" href="@Url.Action("Upload", "Deposit")">Customer Deposit</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" href="javascript:void(0);">News</a>
+                            </li>
+                            @if (UserSession.LubricantFlag == "1")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark font-weight-bold" href="@Url.Action("Index", "Lubricants")" id="lubricants">
+                                        Lubricants Order <span class="badge badge-danger">New</span>
+                                    </a>
+                                </li>
+                            }
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" href="#" id="learningDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Taj Learning Center
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-left shadow-sm" aria-labelledby="learningDropdown">
+                                    <a class="dropdown-item" target="_blank" href="@Url.Content("~/Content/TajManual/index.html")"><i class="fas fa-angle-right text-danger mr-2"></i>Station Manual</a>
+                                    <a class="dropdown-item" href="@Url.Action("TrainingVideos", "Home")"><i class="fas fa-angle-right text-danger mr-2"></i>Forecourt Staff Onboarding</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+
+                <div class="px-4 pb-5">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fa fa-check-circle mr-2"></i>@TempData["SuccessMessage"]
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    }
+
+                    @RenderBody()
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="container-fluid p-0">
+            @RenderBody()
+        </div>
+    }
+
+    <!-- Core Scripts in strict execution order matching PHP source -->
+    <script src="@Url.Content("~/Content/loginpage/vendor/jquery/jquery-3.2.1.min.js")"></script>
+    <script src="@Url.Content("~/Content/assets/bootstrap-4.3.1-dist/js/popper.min.js")"></script>
+    <script src="@Url.Content("~/Content/assets/bootstrap-4.3.1-dist/js/bootstrap.min.js")"></script>
+    <script src="@Url.Content("~/Content/assets/fontawesome-free-5.15.3-web/js/all.js")"></script>
+    <script src="@Url.Content("~/Content/assets/DataTables2/DataTables-1.10.25/js/jquery.dataTables.min.js")"></script>
+    <script src="@Url.Content("~/Content/assets/DataTables2/Buttons-1.7.1/js/dataTables.buttons.js")"></script>
+    <script src="@Url.Content("~/Content/assets/DataTables2/Buttons-1.7.1/js/buttons.bootstrap4.js")"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="@Url.Content("~/Content/adminPanel/sidebar-01/js/main.js")"></script>
+    <script src="@Url.Content("~/Scripts/js/session_idle.js")"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Sidebar collapse handler for Admin
+            $('#sidebarCollapse').on('click', function () {
+                $('#sidebar').toggleClass('active');
+            });
+
+            // Customer Balance popup handler matching navbar.php
+            let balance = document.getElementById('balance');
+            if (balance) {
+                balance.addEventListener("click", function(){ 
+                    $.get('@Url.Action("GetBalanceDetails", "Home")', function(data) {
+                        Swal.fire({
+                            html: '<b>Balance:</b> ' + (data.Balance || '0') + '<br><br><b>Credit Limit:</b> ' + (data.CreditLimit || '0') + '<br><br><b>Available Credit Limit:</b> ' + (data.AvailableCreditLimit || '0'),
+                            confirmButtonText: 'Close',
+                            confirmButtonColor: '#ED1C24'
+                        });
+                    });
+                });
+            }
+        });
+    </script>
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

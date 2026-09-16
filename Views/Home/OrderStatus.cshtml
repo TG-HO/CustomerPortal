@@ -1,0 +1,107 @@
+@model IEnumerable<CustomerPortal_MVC_.Models.CustOrderTable>
+@{
+    ViewBag.Title = "Order Status";
+    ViewBag.ActiveMenu = "OrderStatus";
+}
+
+<style>
+    .steps {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        position: relative;
+    }
+
+    .step-button {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: none;
+        background-color: lightgray;
+        transition: .4s;
+    }
+
+    .done {
+        background-color: #0c8346 !important;
+        color: #fff !important;
+    }
+
+    .step-item {
+        text-align: center;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="alert custOrderTab">
+        <i class="fas fa-search-location mr-2"></i> ORDER PIPELINE STATUS
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        foreach (var order in Model)
+        {
+            <div class="card mb-4 shadow-sm border-0">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <span class="font-weight-bold">Order #: <span class="text-danger">@order.OrderPrefixId</span></span>
+                    <span class="badge badge-light text-muted">Created: @(order.OrderCreatedOn.HasValue ? order.OrderCreatedOn.Value.ToString("yyyy-MM-dd") : "-")</span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-3"><strong>Product:</strong> @(order.ProductName ?? order.ProductCode)</div>
+                        <div class="col-md-3"><strong>Quantity:</strong> @order.RequiredQuantity.ToString("N0") L</div>
+                        <div class="col-md-3"><strong>Site:</strong> @(order.Site ?? "-")</div>
+                        <div class="col-md-3"><strong>Tank Lorry:</strong> @(order.CarrierCode ?? "Pending")</div>
+                    </div>
+
+                    <div class="steps mt-4">
+                        <div class="step-item">
+                            <button class="step-button done"><i class="fas fa-check"></i></button>
+                            <div class="mt-2 small font-weight-bold">Submitted</div>
+                            <div class="text-muted small">@(order.OrderCreatedOn.HasValue ? order.OrderCreatedOn.Value.ToString("dd/MM/yyyy") : "")</div>
+                        </div>
+
+                        <div class="step-item">
+                            <button class="step-button @(order.ApprovedStatus == 1 || order.ReleasedFlag == 1 ? "done" : "")">
+                                <i class="fas @(order.ApprovedStatus == 1 || order.ReleasedFlag == 1 ? "fa-check" : "fa-clock")"></i>
+                            </button>
+                            <div class="mt-2 small font-weight-bold">Scheduled</div>
+                            <div class="text-muted small">@(order.ApprovedDate.HasValue ? order.ApprovedDate.Value.ToString("dd/MM/yyyy") : "Pending")</div>
+                        </div>
+
+                        <div class="step-item">
+                            <button class="step-button @(order.ShippedFlag == 1 ? "done" : "")">
+                                <i class="fas @(order.ShippedFlag == 1 ? "fa-check" : "fa-truck")"></i>
+                            </button>
+                            <div class="mt-2 small font-weight-bold">Shipped</div>
+                            <div class="text-muted small">@(order.ShippedFlag == 1 ? "Dispatched" : "Pending")</div>
+                        </div>
+
+                        <div class="step-item">
+                            <button class="step-button @(order.ReceivedFlag == 1 ? "done" : "")">
+                                <i class="fas @(order.ReceivedFlag == 1 ? "fa-check" : "fa-box")"></i>
+                            </button>
+                            <div class="mt-2 small font-weight-bold">Delivered</div>
+                            <div class="text-muted small">@(order.ReceivedDateTime.HasValue ? order.ReceivedDateTime.Value.ToString("dd/MM/yyyy") : "Pending")</div>
+                        </div>
+
+                        <div class="step-item">
+                            <button class="step-button @(order.ProfUploadFlag == 1 ? "done" : "")">
+                                <i class="fas @(order.ProfUploadFlag == 1 ? "fa-check" : "fa-file-invoice")"></i>
+                            </button>
+                            <div class="mt-2 small font-weight-bold">Invoiced</div>
+                            <div class="text-muted small">@(order.ProfUploadFlag == 1 ? "Completed" : "Pending")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="card p-5 text-center text-muted border-0 shadow-sm">
+            <i class="fas fa-box-open fa-3x mb-3 text-secondary"></i>
+            <h5>No active order pipeline records found.</h5>
+        </div>
+    }
+</div>

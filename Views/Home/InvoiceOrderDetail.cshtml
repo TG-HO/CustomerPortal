@@ -1,0 +1,99 @@
+@model CustomerPortal_MVC_.Models.CustOrderTable
+@{
+    ViewBag.Title = "Invoice Order Detail - " + Model.OrderPrefixId;
+    ViewBag.ActiveMenu = "InvoicedOrders";
+}
+
+<style>
+    #status {
+        width: 100% !important;
+        padding: 0 !important;
+    }
+
+    .pipeline-step {
+        display: inline-block;
+        padding: 10px 20px;
+        font-weight: 500;
+        text-align: center;
+        border-bottom: 3px solid #dee2e6;
+    }
+
+    .pipeline-step.active {
+        border-bottom-color: #28a745;
+        color: #28a745;
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="alert custOrderTab">
+        <i class="fas fa-file-invoice mr-2"></i> Invoice Order Detail: @Model.OrderPrefixId
+    </div>
+
+    <!-- Pipeline Step Bar matching PHP invoiceorderdetail.php -->
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-body p-3 text-center">
+            <div class="d-flex justify-content-around flex-wrap">
+                <div class="pipeline-step active">
+                    <i class="fas fa-check text-success mr-1"></i> Submitted
+                    <div class="small text-muted">@(Model.OrderCreatedOn.HasValue ? Model.OrderCreatedOn.Value.ToString("dd-MM-yyyy") : "-")</div>
+                </div>
+                <div class="pipeline-step active">
+                    <i class="fas fa-check text-success mr-1"></i> Scheduled
+                    <div class="small text-muted">@(Model.ApprovedDate.HasValue ? Model.ApprovedDate.Value.ToString("dd-MM-yyyy") : "-")</div>
+                </div>
+                <div class="pipeline-step active">
+                    <i class="fas fa-check text-success mr-1"></i> Shipped
+                    <div class="small text-muted">Shipped</div>
+                </div>
+                <div class="pipeline-step active">
+                    <i class="fas fa-check text-success mr-1"></i> Delivered
+                    <div class="small text-muted">@(Model.ReceivedDateTime.HasValue ? Model.ReceivedDateTime.Value.ToString("dd-MM-yyyy") : "-")</div>
+                </div>
+                <div class="pipeline-step active">
+                    <i class="fas fa-check text-success mr-1"></i> Invoiced
+                    <div class="small text-muted">Invoiced</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <table class="table table-sm table-hover" id="customtab">
+                <thead class="head">
+                    <tr class="table-bordered text-black text-center">
+                        <th scope="col">PO Number</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Item Code</th>
+                        <th scope="col">Item Name</th>
+                        <th scope="col">Unit</th>
+                        <th scope="col">Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="text-black text-center">
+                        <td>@Model.OrderPrefixId</td>
+                        <td><span class="badge badge-success">INVOICED</span></td>
+                        <td>@Model.ProductCode</td>
+                        <td>@(Model.ProductName ?? Model.ProductCode)</td>
+                        <td>@(Model.Unit ?? "Litres")</td>
+                        <td>@Model.RequiredQuantity.ToString("N0")</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="d-flex justify-content-between mt-4">
+                <a href="@Url.Action("InvoicedOrders", "Home")" class="btn btn-outline-secondary">
+                    <i class="fa fa-arrow-left mr-1"></i> Back to Invoiced Orders
+                </a>
+
+                @if (Model.ProfUploadFlag == 1 && !string.IsNullOrEmpty(Model.ProfDocument))
+                {
+                    <a href="@Url.Content("~/Content/uploads/" + Model.ProfDocument)" target="_blank" class="btn btn-danger">
+                        <i class="fa fa-download mr-1"></i> Download Proforma Invoice
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>

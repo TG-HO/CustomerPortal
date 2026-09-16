@@ -1,0 +1,91 @@
+body{
+    font-family: 'Neutra Text', sans-serif !important;
+   }
+
+
+    #sidebar ul li a{
+      color:#746F6D !important;
+    }
+    #sidebar ul li a:hover{
+      border-bottom:1px solid red !important;
+    }
+    #sidebar{
+      background: white !important;
+    }
+    .btn.btn-primary{
+      background:#ED1C24 !important;
+      border-color:#c7aaab !important;
+    }
+    .btn.btn-primary:hover{
+      background:#ED1C24 !important;
+      border-color:#ED1C24 !important;
+    }
+    #sidebar .logo{
+      height:85px !important;
+      width:100px !important;
+    }
+    #tab_filter > label > input[type='search']{
+      outline: none;
+      /* border-color: #ED1C24 !important; */
+      /* box-shadow: 0 0 0 0.2rem rgba(245, 10, 10, 0.25) !important; */
+   }
+   .dataTables_wrapper .dataTables_length select{
+     border: none !important;
+     padding: 0px !important;
+     outline: #ED1C24 !important;
+   }
+   .holds{
+     outline: none !important;
+   }
+
+   .custOrderTab{
+    background-image: linear-gradient(top, #ED1C24, white);
+    box-shadow: 0px 4px 2px -1px gray;
+    color: #ED1C24 !important;
+  }
+  
+
+/* bold */
+@font-face {
+  font-family: NeutraAlt;
+  src: url('../fonts/NeutraDisplay-BoldAlt.otf');
+}
+
+.num{
+font-family: NeutraAlt !important;
+font-weight: bold !important;
+font-size: 15px;
+}
+
+
+/* thead  */
+@font-face {
+  font-family: NeutraTitle;
+  src: url('../fonts/Neutra\ Display\ Titling.otf');
+}
+
+.title{
+font-family: NeutraTitle !important;
+/* font-weight: 1000; */
+font-size: 14px;
+}
+
+/* excel button  */
+.dt-button{
+  border-color: #ED1C24 !important;
+  color: grey !important;
+  background: white !important;
+}
+.dt-button:hover{
+  background:#ED1C24 !important;
+  color: white !important;
+}
+
+
+/* tbody  */
+
+
+/* medai query  */
+@media screen and (max-width:600px){
+  
+}

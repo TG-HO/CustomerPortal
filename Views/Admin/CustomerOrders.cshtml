@@ -1,0 +1,109 @@
+@model List<CustomerPortal_MVC_.Models.CustOrderTable>
+@{
+    ViewBag.Title = "Hold Free Orders - Admin";
+    ViewBag.ActiveMenu = "CustomerOrders";
+}
+
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800"><i class="fa fa-cube text-danger mr-2"></i>Hold Free Orders</h1>
+        <a href="@Url.Action("MergeOrders", "Admin")" class="btn btn-sm btn-outline-danger">
+            <i class="fa fa-compress mr-1"></i> Merge Orders
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["SuccessMessage"]
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+    }
+
+    <div class="card shadow border-0 mb-4">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold"><i class="fa fa-list mr-2"></i>Customer Orders List</h6>
+            <span class="badge badge-danger">@(Model != null ? Model.Count : 0) Orders</span>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped table-bordered" id="customerOrdersTable">
+                    <thead class="thead-dark">
+                        <tr class="text-center">
+                            <th>Order Date</th>
+                            <th>Order ID</th>
+                            <th>Cust ID</th>
+                            <th>Product</th>
+                            <th>Ordered Qty</th>
+                            <th>HoldsFree Qty</th>
+                            <th>Pending Qty</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr class="text-center">
+                                    <td>@(item.OrderCreatedOnDateTime.HasValue ? item.OrderCreatedOnDateTime.Value.ToString("yyyy-MM-dd HH:mm") : "-")</td>
+                                    <td class="font-weight-bold text-danger">@item.OrderPrefixId</td>
+                                    <td>@item.OrderCreatedUser</td>
+                                    <td>@(item.ProductName ?? item.ProductCode)</td>
+                                    <td>@((item.RequiredQuantity ?? 0).ToString("N0"))</td>
+                                    <td>@((item.HoldFreeQty ?? 0).ToString("N0"))</td>
+                                    <td>@((item.PendingQty ?? 0).ToString("N0"))</td>
+                                    <td>
+                                        @if (item.CancelFlag == 1)
+                                        {
+                                            <span class="badge badge-danger">Cancelled</span>
+                                        }
+                                        else if (item.ReleasedFlag == 1)
+                                        {
+                                            <span class="badge badge-success">Released</span>
+                                        }
+                                        else if (item.HoldsFreeFlag == 1)
+                                        {
+                                            <span class="badge badge-warning">Hold Free</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-secondary">Pending</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            @if (item.CancelFlag == 0 && item.ReleasedFlag == 0)
+                                            {
+                                                <a href="@Url.Action("Approve", "Admin", new { op = item.OrderPrefixId, cust = item.OrderCreatedUser })" class="btn btn-danger" title="Approve / Release">
+                                                    <i class="fa fa-check"></i> Release
+                                                </a>
+                                            }
+                                            <a href="@Url.Action("UploadProforma", "Admin", new { op = item.OrderPrefixId, cust = item.OrderCreatedUser })" class="btn btn-outline-secondary" title="Upload Proforma">
+                                                <i class="fa fa-upload"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $('#customerOrdersTable').DataTable({
+                "ordering": false,
+                "language": {
+                    "searchPlaceholder": "Search orders..."
+                }
+            });
+        });
+    </script>
+}

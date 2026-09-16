@@ -1,0 +1,110 @@
+@model IEnumerable<CustomerPortal_MVC_.Models.LubricantOrderHead>
+@{
+    ViewBag.Title = "Submitted Lubricant Orders";
+    ViewBag.ActiveMenu = "Lubricants";
+}
+
+@section styles {
+    <style>
+        .custOrderTab {
+            background-color: #ED1C24 !important;
+            color: white !important;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 12px 20px;
+            border-radius: 4px;
+            margin-bottom: 25px;
+        }
+        .head {
+            background-color: #ED1C24;
+            color: white;
+        }
+        .num {
+            font-weight: 500;
+        }
+    </style>
+}
+
+<div class="container-fluid">
+    <div class="alert custOrderTab shadow-sm">
+        <i class="fas fa-oil-can mr-2"></i> SUBMITTED LUBRICANT ORDERS
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fa fa-check-circle mr-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    }
+
+    <div class="mb-3 text-right">
+        <a href="@Url.Action("NewOrder", "Lubricants")" class="btn btn-danger font-weight-bold">
+            <i class="fas fa-plus mr-1"></i> Create New Lubricant Order
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-sm mt-1 table-hover" id="tabLubeOrders">
+            <thead class="head">
+                <tr class="table-bordered text-white text-center">
+                    <th scope="col">Order Number</th>
+                    <th scope="col">Site</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Submitted Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var order in Model)
+                    {
+                        <tr class="text-black text-center">
+                            <td class="font-weight-bold text-primary">@order.OrderNumber</td>
+                            <td>@(order.CustSite ?? "-")</td>
+                            <td>
+                                @if (order.OrderStatus == "APPROVED" || order.OrderStatus == "UPLOADED")
+                                {
+                                    <span class="badge badge-success">@order.OrderStatus</span>
+                                }
+                                else if (order.OrderStatus == "CANCELLED")
+                                {
+                                    <span class="badge badge-danger">@order.OrderStatus</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-warning">@(order.OrderStatus ?? "SUBMITTED")</span>
+                                }
+                            </td>
+                            <td class="num">@(order.CreatedDateTime.HasValue ? order.CreatedDateTime.Value.ToString("yyyy-MM-dd hh:mm tt") : (order.CreatedDate.HasValue ? order.CreatedDate.Value.ToString("yyyy-MM-dd") : "-"))</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" class="text-center py-4 text-muted">No submitted lubricant orders found.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            if ($('#tabLubeOrders tbody tr').length > 0 && !$('#tabLubeOrders tbody tr td[colspan]').length) {
+                $('#tabLubeOrders').DataTable({
+                    order: [[3, 'desc']],
+                    pageLength: 25,
+                    language: {
+                        search: "Search Lubricant Orders:"
+                    }
+                });
+            }
+        });
+    </script>
+}

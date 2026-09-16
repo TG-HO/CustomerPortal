@@ -1,0 +1,113 @@
+@{
+    ViewBag.Title = "Customer Portal - Onboarding Videos";
+    ViewBag.ActiveMenu = "Videos";
+}
+
+<div class="container-fluid">
+    <div class="alert custOrderTab">
+        <i class="fas fa-play-circle mr-2"></i> Customer portal - onboarding videos
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover mt-3">
+            <thead>
+                <tr class="table-bordered text-center">
+                    <th scope="col" style="width: 100px;">Serial No</th>
+                    <th scope="col" class="text-left">Video Name</th>
+                    <th scope="col" style="width: 100px;">Play</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row" class="text-center">1</th>
+                    <td>Attendance process</td>
+                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Attendance.mp4"><i class="fa fa-play"></i></button></td>
+                </tr>
+                <tr>
+                    <th scope="row" class="text-center">2</th>
+                    <td>Biker service steps</td>
+                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Bikercustomerservicesteps.mp4"><i class="fa fa-play"></i></button></td>
+                </tr>
+                <tr>
+                    <th scope="row" class="text-center">3</th>
+                    <td>Cashier service steps</td>
+                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Cashierservicesteps.mp4"><i class="fa fa-play"></i></button></td>
+                </tr>
+                <tr>
+                    <th scope="row" class="text-center">4</th>
+                    <td>Customer measurement check</td>
+                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Customermeasurementcheckprocess.mp4"><i class="fa fa-play"></i></button></td>
+                </tr>
+                <tr>
+                    <th scope="row" class="text-center">5</th>
+                    <td>Diesel customer service steps</td>
+                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Dieselcustomerservicesteps.mp4"><i class="fa fa-play"></i></button></td>
+                </tr>
+                <tr>
+                    <th scope="row" class="text-center">6</th>
+                    <td>Entering quantity</td>
+                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Enteringquantity.mp4"><i class="fa fa-play"></i></button></td>
+                </tr>
+                <tr>
+                    <th scope="row" class="text-center">7</th>
+                    <td>HSSE basics</td>
+                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="HSSEBasicstraining.mp4"><i class="fa fa-play"></i></button></td>
+                </tr>
+                <tr>
+                    <th scope="row" class="text-center">8</th>
+                    <td>Motorist service steps</td>
+                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Motoristcustomerservicesteps.mp4"><i class="fa fa-play"></i></button></td>
+                </tr>
+                <tr>
+                    <th scope="row" class="text-center">9</th>
+                    <td>Namaz SOP</td>
+                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="NamazSOP.mp4"><i class="fa fa-play"></i></button></td>
+                </tr>
+                <tr>
+                    <th scope="row" class="text-center">10</th>
+                    <td>Nozzle handling</td>
+                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Nozzlehandling.mp4"><i class="fa fa-play"></i></button></td>
+                </tr>
+                <tr>
+                    <th scope="row" class="text-center">11</th>
+                    <td>Personal hygiene</td>
+                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Peronalhygienetraining.mp4"><i class="fa fa-play"></i></button></td>
+                </tr>
+                <tr>
+                    <th scope="row" class="text-center">12</th>
+                    <td>Personal grooming</td>
+                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Personalgroomingtraining.mp4"><i class="fa fa-play"></i></button></td>
+                </tr>
+                <tr>
+                    <th scope="row" class="text-center">13</th>
+                    <td>Uniform guidelines</td>
+                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Uniformguidelines.mp4"><i class="fa fa-play"></i></button></td>
+                </tr>
+                <tr>
+                    <th scope="row" class="text-center">14</th>
+                    <td>Welcoming posture</td>
+                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Uniformguidelines.mp4"><i class="fa fa-play"></i></button></td>
+                </tr>
+                <tr>
+                    <th scope="row" class="text-center">15</th>
+                    <td>Decantation process</td>
+                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Decantationprocess.mp4"><i class="fa fa-play"></i></button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const playButtons = document.querySelectorAll(".play-btn");
+            playButtons.forEach(button => {
+                button.addEventListener("click", function () {
+                    const videoSrc = "@Url.Content("~/Content/videos/")" + this.dataset.video;
+                    window.open(videoSrc, "Video Player", "width=800, height=600");
+                });
+            });
+        });
+    </script>
+}

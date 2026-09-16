@@ -1,0 +1,110 @@
+@model CustomerPortal_MVC_.Models.ViewModels.CustomerTransactionPageViewModel
+@{
+    ViewBag.Title = "Customer Transactions";
+    ViewBag.ActiveMenu = "CustomerTransaction";
+}
+
+@section styles {
+    <style>
+        .custOrderTab {
+            background-color: #ED1C24 !important;
+            color: white !important;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 12px 20px;
+            border-radius: 4px;
+            margin-bottom: 25px;
+        }
+        .head {
+            background-color: #ED1C24;
+            color: white;
+        }
+        .num {
+            font-weight: 500;
+        }
+    </style>
+}
+
+<div class="container-fluid">
+    <div class="alert custOrderTab">
+        <i class="fas fa-calculator mr-2"></i> CUSTOMER TRANSACTIONS
+    </div>
+
+    <!-- Summary Metrics Header -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 border-left-danger p-3 bg-light">
+                <label class="text-muted font-weight-bold mb-1 small text-uppercase">Customer Balance</label>
+                <h4 class="font-weight-bold text-dark mb-0">@Model.CustomerBalance.ToString("N0")</h4>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 border-left-danger p-3 bg-light">
+                <label class="text-muted font-weight-bold mb-1 small text-uppercase">Customer Credit Limit</label>
+                <h4 class="font-weight-bold text-dark mb-0">@Model.CreditLimit.ToString("N0")</h4>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 border-left-danger p-3 bg-light">
+                <label class="text-muted font-weight-bold mb-1 small text-uppercase">Available Credit Limit</label>
+                <h4 class="font-weight-bold text-danger mb-0">@Model.AvailableCreditLimit.ToString("N0")</h4>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="table-responsive">
+        <table class="table table-sm mt-1 table-hover" id="tabTransactions">
+            <thead class="head">
+                <tr class="table-bordered text-white text-center">
+                    <th scope="col">Voucher</th>
+                    <th scope="col">Transaction Type</th>
+                    <th scope="col">Transaction Date</th>
+                    <th scope="col">Invoice</th>
+                    <th scope="col">Credit</th>
+                    <th scope="col">Debit</th>
+                    <th scope="col">Balance</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Transactions != null && Model.Transactions.Any())
+                {
+                    foreach (var item in Model.Transactions)
+                    {
+                        <tr class="text-black text-center">
+                            <td>@item.Voucher</td>
+                            <td><span class="badge @(item.TransType == "PAYMENT" ? "badge-success" : "badge-info")">@item.TransType</span></td>
+                            <td class="num">@(item.TransDate.HasValue ? item.TransDate.Value.ToString("yyyy-MM-dd") : "-")</td>
+                            <td>@item.Invoice</td>
+                            <td class="num text-success">@(item.Credit.HasValue ? item.Credit.Value.ToString("N0") : "-")</td>
+                            <td class="num text-danger">@(item.Debit.HasValue ? item.Debit.Value.ToString("N0") : "-")</td>
+                            <td class="num font-weight-bold">@(item.Balance.HasValue ? item.Balance.Value.ToString("N0") : "-")</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">No transactions found for the selected period.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            if ($('#tabTransactions tbody tr').length > 0 && !$('#tabTransactions tbody tr td[colspan]').length) {
+                $('#tabTransactions').DataTable({
+                    order: [[2, 'desc']],
+                    pageLength: 25,
+                    language: {
+                        search: "Filter records:"
+                    }
+                });
+            }
+        });
+    </script>
+}
