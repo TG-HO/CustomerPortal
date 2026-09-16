@@ -12,7 +12,7 @@ namespace CustomerPortal_MVC_.DAL
             Configuration.ProxyCreationEnabled = true;
         }
 
-        public PortalDbContext(string connectionStringName) : base("name=" + connectionStringName)
+        public PortalDbContext(string connectionStringName) : base(connectionStringName.Contains("=") ? connectionStringName : "name=" + connectionStringName)
         {
             Configuration.LazyLoadingEnabled = true;
             Configuration.ProxyCreationEnabled = true;
@@ -27,8 +27,6 @@ namespace CustomerPortal_MVC_.DAL
         public virtual DbSet<TankCapacity> TankCapacities { get; set; }
         public virtual DbSet<CpDeposit> Deposits { get; set; }
         public virtual DbSet<SalesTable> SalesOrders { get; set; }
-        public virtual DbSet<LubricantBrand> LubricantBrands { get; set; }
-        public virtual DbSet<LubricantProduct> LubricantProducts { get; set; }
         public virtual DbSet<LubricantOrderHead> LubricantOrderHeads { get; set; }
         public virtual DbSet<LubricantOrderLine> LubricantOrderLines { get; set; }
         public virtual DbSet<LubricantOrderFinal> LubricantOrderFinals { get; set; }
@@ -40,6 +38,10 @@ namespace CustomerPortal_MVC_.DAL
 
             // Remove default pluralizing table name convention
             modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+
+            // Ignore DTO / virtual entities without dedicated database tables
+            modelBuilder.Ignore<LubricantBrand>();
+            modelBuilder.Ignore<LubricantProduct>();
 
             // 1. CustTable & DirPartyTable
             modelBuilder.Entity<CustTable>()
@@ -57,7 +59,6 @@ namespace CustomerPortal_MVC_.DAL
                 .HasForeignKey(o => o.OrderCreatedUser)
                 .WillCascadeOnDelete(false);
 
-
             // 3. TankCapacity & CustTable
             modelBuilder.Entity<TankCapacity>()
                 .HasOptional(t => t.Customer)
@@ -73,8 +74,6 @@ namespace CustomerPortal_MVC_.DAL
                 .WithMany(c => c.Deposits)
                 .HasForeignKey(d => d.AccountCode)
                 .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<CpDeposit>().Property(d => d.Amount).HasPrecision(18, 2);
 
             // 5. CustSessionLog & UserInfo
             modelBuilder.Entity<CustSessionLog>()

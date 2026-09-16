@@ -61,5 +61,14 @@ namespace CustomerPortal_MVC_.Models
 
         [Column("isnew")]
         public int IsNew { get; set; }
+
+        [NotMapped]
+        public int? TotalQty { get; set; }
+
+        [NotMapped]
+        public decimal? GrandTotal { get; set; }
+
+        [NotMapped]
+        public DateTime? OrderDate => CreatedDateTime ?? CreatedDate;
     }
 }

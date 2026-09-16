@@ -89,11 +89,28 @@ namespace CustomerPortal_MVC_.Models
         [Column("ORDERCREATEDONDATETIME")]
         public DateTime? OrderCreatedOnDateTime { get; set; }
 
+        [Column("HOLDSFREEDATE")]
+        public DateTime? HoldsFreeDate { get; set; }
+
         [Column("HOLDSFREEDATETIME")]
         public DateTime? HoldsFreeDateTime { get; set; }
 
+        [Column("SCHEDULEFOR")]
+        public DateTime? ScheduleFor { get; set; }
+
         [Column("APPROVEDDATE")]
         public DateTime? ApprovedDate { get; set; }
+
+        [Column("APPROVEDSTATUS")]
+        public int? ApprovedStatus { get; set; }
+
+        [Column("APPROVEDBY")]
+        [StringLength(50)]
+        public string ApprovedBy { get; set; }
+
+        [Column("SITENAME")]
+        [StringLength(100)]
+        public string SiteName { get; set; }
 
         [Column("RECEIVEDDATETIME")]
         public DateTime? ReceivedDateTime { get; set; }

@@ -51,8 +51,8 @@
                                     <td class="font-weight-bold text-danger">@item.OrderPrefixId</td>
                                     <td>@item.OrderCreatedUser</td>
                                     <td>@(item.ProductName ?? item.ProductCode)</td>
-                                    <td>@((item.RequiredQuantity ?? 0).ToString("N0"))</td>
-                                    <td>@((item.HoldFreeQty ?? 0).ToString("N0"))</td>
+                                    <td>@item.RequiredQuantity.ToString("N0")</td>
+                                    <td>@item.HoldFreeQty.ToString("N0")</td>
                                     <td>@((item.PendingQty ?? 0).ToString("N0"))</td>
                                     <td>
                                         @if (item.CancelFlag == 1)

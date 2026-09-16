@@ -36,14 +36,14 @@
                                 <tr class="text-center">
                                     <td>@item.Id</td>
                                     <td class="font-weight-bold">@item.AccountCode</td>
-                                    <td>@item.DsBank</td>
-                                    <td class="font-weight-bold text-success">@item.Amount.ToString("N2")</td>
-                                    <td>@item.DsDate.ToString("yyyy-MM-dd")</td>
-                                    <td>@(item.DsDesc ?? "-")</td>
+                                    <td>@(item.DsBank ?? item.Bank ?? "-")</td>
+                                    <td class="font-weight-bold text-success">@(item.NumericAmount > 0 ? item.NumericAmount.ToString("N2") : item.Amount)</td>
+                                    <td>@(item.DsDate.HasValue ? item.DsDate.Value.ToString("yyyy-MM-dd") : "-")</td>
+                                    <td>@(item.DsDesc ?? item.Description ?? "-")</td>
                                     <td>
                                         @if (!string.IsNullOrEmpty(item.DsUpload))
                                         {
-                                            <a href="@Url.Content("~/Content/uploads/" + item.DsUpload)" target="_blank" class="btn btn-sm btn-outline-danger">
+                                            <a href="@Url.Content("~/images/ds/" + item.DsUpload)" target="_blank" class="btn btn-sm btn-outline-danger">
                                                 <i class="fa fa-file-image-o mr-1"></i> View Slip
                                             </a>
                                         }

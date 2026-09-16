@@ -7,7 +7,7 @@ using CustomerPortal_MVC_.Services;
 
 namespace CustomerPortal_MVC_.Controllers
 {
-    [CustomAuthorize(Roles = "Customer")]
+    [CustomAuthorize(Roles = "Customer,Admin")]
     public class DepositController : Controller
     {
         private readonly ICustomerService _customerService;
@@ -45,6 +45,11 @@ namespace CustomerPortal_MVC_.Controllers
         public ActionResult Upload(DepositUploadViewModel model)
         {
             string customerId = UserSession.UserId;
+
+            if (model.NumericAmount <= 0)
+            {
+                ModelState.AddModelError("Amount", "Please enter a valid deposit amount greater than zero.");
+            }
 
             if (!ModelState.IsValid)
             {

@@ -194,7 +194,7 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" href="javascript:void(0);">News</a>
                             </li>
-                            @if (UserSession.LubricantFlag == "1")
+                            @if (UserSession.LubricantFlag == "1" || UserSession.IsAdmin)
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-dark font-weight-bold" href="@Url.Action("Index", "Lubricants")" id="lubricants">
@@ -207,7 +207,7 @@
                                     Taj Learning Center
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-left shadow-sm" aria-labelledby="learningDropdown">
-                                    <a class="dropdown-item" target="_blank" href="@Url.Content("~/Content/TajManual/index.html")"><i class="fas fa-angle-right text-danger mr-2"></i>Station Manual</a>
+                                    <a class="dropdown-item" href="@Url.Action("StationManual", "Home")"><i class="fas fa-angle-right text-danger mr-2"></i>Station Manual</a>
                                     <a class="dropdown-item" href="@Url.Action("TrainingVideos", "Home")"><i class="fas fa-angle-right text-danger mr-2"></i>Forecourt Staff Onboarding</a>
                                 </div>
                             </li>

@@ -240,6 +240,12 @@ namespace CustomerPortal_MVC_.Services
             decimal totalBalance = balance + amountToBeDelivered;
             decimal availableCreditLimit = creditLimit - totalBalance;
 
+            var pendingOrders = orders.Where(o => o.PendingFlag == 1 || (o.PendingQty.HasValue && o.PendingQty.Value > 0)).OrderByDescending(o => o.OrderId).ToList();
+            var holdsFreeOrders = orders.Where(o => (o.HoldsFreeFlag == 1 || o.PartialHfFlag == 1 || o.HoldsFreeBalance > 0)).OrderByDescending(o => o.OrderId).ToList();
+            var scheduledOrders = orders.Where(o => (o.ApprovedStatus == 1 || o.ReleasedFlag == 1) && (o.ShippedFlag == 0 || o.ShippedFlag == null)).OrderByDescending(o => o.OrderId).ToList();
+            var shippedOrders = orders.Where(o => o.ShippedFlag == 1 && (o.ReceivedFlag == 0 || o.ReceivedFlag == null)).OrderByDescending(o => o.OrderId).ToList();
+            var deliveredOrders = orders.Where(o => o.ReceivedFlag == 1 || (o.ShippedFlag == 1 && o.ProfUploadFlag == 1)).OrderByDescending(o => o.OrderId).Take(20).ToList();
+
             var summary = new DashboardSummaryViewModel
             {
                 CustomerId = cid,
@@ -247,7 +253,7 @@ namespace CustomerPortal_MVC_.Services
                 CustomerSite = cust?.CustSite ?? "Main Depot",
                 TotalOrdersCount = orders.Count,
                 OpenOrdersCount = orders.Count(o => (o.ReceivedFlag == 0 || o.ReceivedFlag == null) && (o.ShippedFlag == 0 || o.ShippedFlag == null)),
-                PendingOrdersCount = orders.Count(o => o.PendingFlag == 1 || (o.PendingQty.HasValue && o.PendingQty.Value > 0)),
+                PendingOrdersCount = pendingOrders.Count,
                 InvoicedOrdersCount = orders.Count(o => o.ShippedFlag == 1 && o.ProfUploadFlag == 1),
                 TotalHoldsFreeBalance = totalHfBalance,
                 CreditLimit = creditLimit,
@@ -256,7 +262,12 @@ namespace CustomerPortal_MVC_.Services
                 AvailableCreditLimit = availableCreditLimit,
                 DealerRatesHsd = rateHsd,
                 DealerRatesPmg = ratePmg,
-                DealerRatesHobc = rateHobc
+                DealerRatesHobc = rateHobc,
+                PendingOrdersList = pendingOrders,
+                HoldsFreeOrdersList = holdsFreeOrders,
+                ScheduledOrdersList = scheduledOrders,
+                ShippedOrdersList = shippedOrders,
+                DeliveredOrdersList = deliveredOrders
             };
 
             return summary;

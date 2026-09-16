@@ -35,7 +35,7 @@
                                 <td class="font-weight-bold text-danger">@item.OrderPrefixId</td>
                                 <td>@item.OrderCreatedUser</td>
                                 <td>@item.ProductName</td>
-                                <td>@((item.RequiredQuantity ?? 0).ToString("N0")) L</td>
+                                <td>@(item.RequiredQuantity.ToString("N0")) L</td>
                                 <td>@(item.OrderCreatedOnDateTime.HasValue ? item.OrderCreatedOnDateTime.Value.ToString("yyyy-MM-dd HH:mm") : "N/A")</td>
                                 <td>
                                     @if (item.HoldsFreeFlag == 1)

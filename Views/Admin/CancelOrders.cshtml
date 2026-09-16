@@ -38,7 +38,7 @@
                                     <td class="font-weight-bold text-danger">@item.OrderPrefixId</td>
                                     <td>@item.OrderCreatedUser</td>
                                     <td>@(item.ProductName ?? item.ProductCode)</td>
-                                    <td>@((item.RequiredQuantity ?? 0).ToString("N0")) L</td>
+                                    <td>@(item.RequiredQuantity.ToString("N0")) L</td>
                                     <td>@(item.CancelDateTime.HasValue ? item.CancelDateTime.Value.ToString("yyyy-MM-dd HH:mm") : "-")</td>
                                     <td><span class="badge badge-danger">Cancelled</span></td>
                                 </tr>

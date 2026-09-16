@@ -166,6 +166,8 @@
     <Content Include="Views\Home\CustomerTransaction.cshtml" />
     <Content Include="Views\Home\HfBalanceDetails.cshtml" />
     <Content Include="Views\Home\TrainingVideos.cshtml" />
+    <Content Include="Views\Home\StationManual.cshtml" />
+    <Content Include="Content\TajManual\index.html" />
     <Content Include="Views\Order\OrderNow.cshtml" />
     <Content Include="Views\Deposit\Upload.cshtml" />
     <Content Include="Views\Lubricants\Index.cshtml" />

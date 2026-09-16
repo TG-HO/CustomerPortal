@@ -418,11 +418,18 @@ namespace CustomerPortal_MVC_.Controllers
                 default:
                     using (var db = new PortalDbContext())
                     {
-                        var prod = db.LubricantProducts.FirstOrDefault(p => p.ProductCode == code);
-                        if (prod != null)
+                        try
                         {
-                            return Content(prod.ProductName ?? prod.ProductCode);
+                            string sql = @"select top 1 ec.NAME from INVENTTABLE as i
+                                           inner join ECORESPRODUCTTRANSLATION as ec on ec.PRODUCT = i.PRODUCT
+                                           where i.ITEMID = @p0 and i.DATAAREAID = 'aml'";
+                            var name = db.Database.SqlQuery<string>(sql, code).FirstOrDefault();
+                            if (!string.IsNullOrEmpty(name))
+                            {
+                                return Content(name);
+                            }
                         }
+                        catch { }
                     }
                     return Content(productvalue);
             }

@@ -28,11 +28,11 @@ namespace CustomerPortal_MVC_.Controllers
         {
             string customerId = UserSession.UserId;
             var orders = _lubeService.GetSubmittedLubeOrders(customerId);
-            return View(orders);
+            return View(orders ?? new System.Collections.Generic.List<CustomerPortal_MVC_.Models.LubricantOrderHead>());
         }
 
         // GET: /Lubricants/NewOrder
-        [CustomAuthorize(Roles = "Customer")]
+        [CustomAuthorize(Roles = "Customer,Admin")]
         public ActionResult NewOrder()
         {
             ViewBag.Brands = new SelectList(_lubeService.GetBrands(), "BrandId", "BrandName");
@@ -41,7 +41,7 @@ namespace CustomerPortal_MVC_.Controllers
 
         // POST: /Lubricants/NewOrder
         [HttpPost]
-        [CustomAuthorize(Roles = "Customer")]
+        [CustomAuthorize(Roles = "Customer,Admin")]
         [ValidateAntiForgeryToken]
         public ActionResult NewOrder(LubeOrderCreateViewModel model)
         {
@@ -70,12 +70,12 @@ namespace CustomerPortal_MVC_.Controllers
         }
 
         // GET: /Lubricants/SubmittedOrders
-        [CustomAuthorize(Roles = "Customer")]
+        [CustomAuthorize(Roles = "Customer,Admin")]
         public ActionResult SubmittedOrders()
         {
             string customerId = UserSession.UserId;
             var orders = _lubeService.GetSubmittedLubeOrders(customerId);
-            return View(orders);
+            return View(orders ?? new System.Collections.Generic.List<CustomerPortal_MVC_.Models.LubricantOrderHead>());
         }
 
         // GET: /Lubricants/GetProductsByBrand?brandId=1

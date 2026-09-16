@@ -37,7 +37,7 @@
         <!-- Deposit Amount -->
         <div class="col-md-6 mb-3">
             <label for="dsAmount" class="form-label font-weight-bold">Enter Amount:</label>
-            <input type="text" class="form-control numbersOnly" onkeyup="paisaq2ss(this.value)" autocomplete="off" id="dsAmount" name="Amount" value="@(Model?.Amount > 0 ? Model.Amount.ToString() : "")" required>
+            <input type="text" class="form-control numbersOnly" onkeyup="paisaq2ss(this.value)" autocomplete="off" id="dsAmount" name="Amount" value="@(Model?.Amount ?? "")" required>
             <span class="help-block text-muted small mt-1" style="max-width: 15rem; display: block;" id="RsNumber"></span>
             @Html.ValidationMessageFor(m => m.Amount, "", new { @class = "text-danger small" })
         </div>
@@ -59,7 +59,7 @@
         <!-- Deposit Slip Date -->
         <div class="col-md-6 mb-3">
             <label for="dsDate" class="form-label font-weight-bold">Deposit Slip Date:</label>
-            <input type="date" class="form-control" id="dsDate" name="DsDate" value="@(Model?.DsDate?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"))" required>
+            <input type="date" class="form-control" id="dsDate" name="DsDate" value="@(Model?.DsDate != default(DateTime) && Model?.DsDate != null ? Model.DsDate.ToString("yyyy-MM-dd") : DateTime.Now.ToString("yyyy-MM-dd"))" required>
             @Html.ValidationMessageFor(m => m.DsDate, "", new { @class = "text-danger small" })
         </div>
 
@@ -73,8 +73,8 @@
 
         <!-- Deposit Description -->
         <div class="col-md-12 mb-3">
-            <label for="dsDesc" class="form-label font-weight-bold">Description:</label>
-            <textarea class="form-control" autocomplete="off" id="dsDesc" rows="4" name="Description" required>@Model?.Description</textarea>
+            <label class="font-weight-bold" for="dsDesc">Description (Max: 50 characters) <span class="text-danger">*</span></label>
+            <textarea class="form-control" autocomplete="off" id="dsDesc" rows="4" name="Description" required>@(Model != null ? Model.Description : "")</textarea>
             @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger small" })
         </div>
 

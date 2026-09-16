@@ -97,6 +97,33 @@
             background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(121,9,21,1) 91%, rgba(0,0,0,1) 100%);
             color: white !important;
         }
+        .pipeline-card {
+            border-radius: 6px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            background: #ffffff;
+        }
+        .pipeline-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15) !important;
+        }
+        .pipeline-scroll-col {
+            max-height: 480px;
+            overflow-y: auto;
+            padding: 4px;
+        }
+        .popover {
+            max-width: 340px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+        }
+        .popover-header {
+            font-weight: bold;
+            font-size: 0.95rem;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
     </style>
 }
 
@@ -206,65 +233,230 @@
 
     <!-- Order Pipeline Columns -->
     <div class="custOrderTab2 mb-5">
-        <table class="table table-bordered bg-white shadow-sm">
+        <table class="table table-bordered bg-white shadow-sm mb-0">
             <thead>
                 <tr class="pipeline-header">
-                    <th class="text-center text-white p-3">Submitted Pending<br /><span class="badge badge-light mt-1">(@Model.PendingOrdersCount)</span></th>
-                    <th class="text-center text-white p-3">Submitted HoldsFree<br /><span class="badge badge-light mt-1">(@(Model.TotalHoldsFreeBalance > 0 ? "1" : "0"))</span></th>
-                    <th class="text-center text-white p-3">Being Scheduled<br /><span class="badge badge-light mt-1">(0)</span></th>
-                    <th class="text-center text-white p-3">Shipping<br /><span class="badge badge-light mt-1">(0)</span></th>
-                    <th class="text-center text-white p-3">Delivered<br /><span class="badge badge-light mt-1">(@Model.InvoicedOrdersCount)</span></th>
+                    <th class="text-center text-white p-3" style="width: 20%;">
+                        Submitted Pending<br />
+                        <span class="badge badge-light mt-1">(@(Model.PendingOrdersList != null ? Model.PendingOrdersList.Count : Model.PendingOrdersCount))</span>
+                    </th>
+                    <th class="text-center text-white p-3" style="width: 20%;">
+                        Submitted HoldsFree<br />
+                        <span class="badge badge-light mt-1">(@(Model.HoldsFreeOrdersList != null ? Model.HoldsFreeOrdersList.Count : 0))</span>
+                    </th>
+                    <th class="text-center text-white p-3" style="width: 20%;">
+                        Being Scheduled<br />
+                        <span class="badge badge-light mt-1">(@(Model.ScheduledOrdersList != null ? Model.ScheduledOrdersList.Count : 0))</span>
+                    </th>
+                    <th class="text-center text-white p-3" style="width: 20%;">
+                        Shipping<br />
+                        <span class="badge badge-light mt-1">(@(Model.ShippedOrdersList != null ? Model.ShippedOrdersList.Count : 0))</span>
+                    </th>
+                    <th class="text-center text-white p-3" style="width: 20%;">
+                        Delivered<br />
+                        <span class="badge badge-light mt-1">(@(Model.DeliveredOrdersList != null ? Model.DeliveredOrdersList.Count : Model.InvoicedOrdersCount))</span>
+                    </th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td width="20%" class="text-center p-3 align-top">
-                        @if (Model.PendingOrdersCount > 0)
-                        {
-                            <div class="card border border-danger mb-2 p-2 shadow-sm">
-                                <span class="text-danger font-weight-bold">@Model.PendingOrdersCount Order(s)</span>
-                                <a href="@Url.Action("PendingOrders", "Home")" class="text-danger small mt-1 font-weight-bold">To be confirmed</a>
-                            </div>
-                        }
-                        else
-                        {
-                            <span class="text-muted small">No pending orders</span>
-                        }
+                    <!-- 1. Submitted Pending -->
+                    <td class="p-2 align-top bg-light">
+                        <div class="pipeline-scroll-col">
+                            @if (Model.PendingOrdersList != null && Model.PendingOrdersList.Any())
+                            {
+                                foreach (var order in Model.PendingOrdersList)
+                                {
+                                    decimal rate = order.ProductCode == "01" ? Model.DealerRatesHsd : (order.ProductCode == "02" ? Model.DealerRatesPmg : Model.DealerRatesHobc);
+                                    decimal pendingAmt = (order.PendingQty ?? order.RequiredQuantity) * rate;
+                                    string popContent = "<div class='small text-left'>" +
+                                        "<p class='mb-1'><b>Order Date:</b> " + (order.OrderCreatedOnDateTime.HasValue ? order.OrderCreatedOnDateTime.Value.ToString("yyyy-MM-dd HH:mm") : (order.OrderCreatedOn.HasValue ? order.OrderCreatedOn.Value.ToString("yyyy-MM-dd") : "N/A")) + "</p>" +
+                                        "<p class='mb-1'><b>Ordered Qty:</b> " + (order.RequiredQuantity.ToString("N0")) + " L</p>" +
+                                        "<p class='mb-1'><b>Pending Qty:</b> " + ((order.PendingQty ?? order.RequiredQuantity).ToString("N0")) + " L</p>" +
+                                        "<p class='mb-1'><b>Pending Amount:</b> PKR " + (pendingAmt.ToString("N0")) + "</p>" +
+                                        "<p class='mb-1'><b>Holdsfree Qty:</b> " + (order.HoldFreeQty.ToString("N0")) + " L</p>" +
+                                        "<p class='mb-2'><b>Product:</b> " + (order.ProductName ?? (order.ProductCode == "01" ? "HSD" : "PMG")) + "</p>" +
+                                        "<a href='" + Url.Action("OpenOrderDetail", "Home", new { op = order.OrderPrefixId }) + "' class='btn btn-sm btn-danger btn-block text-white font-weight-bold'>View Order Details</a>" +
+                                        "</div>";
+
+                                    <div class="pipeline-card card mb-2 p-2 shadow-sm text-center border-danger"
+                                         data-toggle="popover"
+                                         data-html="true"
+                                         data-placement="right"
+                                         data-trigger="hover focus"
+                                         data-title="<span class='text-danger font-weight-bold'><i class='fa fa-clock-o mr-1'></i> Under Review</span>"
+                                         data-content="@popContent">
+                                        <a href="@Url.Action("OpenOrderDetail", "Home", new { op = order.OrderPrefixId })" class="text-danger font-weight-bold d-block text-truncate">@order.OrderPrefixId</a>
+                                        <small class="text-muted font-weight-bold">To be confirmed</small>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="text-center py-4 text-muted small">No pending orders</div>
+                            }
+                        </div>
                     </td>
-                    <td width="20%" class="text-center p-3 align-top">
-                        @if (Model.TotalHoldsFreeBalance > 0)
-                        {
-                            <div class="card border border-success mb-2 p-2 shadow-sm">
-                                <span class="text-success font-weight-bold">@Model.TotalHoldsFreeBalance.ToString("N0") L</span>
-                                <a href="@Url.Action("OpenOrders", "Home")" class="text-success small mt-1 font-weight-bold">HoldsFree Active</a>
-                            </div>
-                        }
-                        else
-                        {
-                            <span class="text-muted small">No holdsfree orders</span>
-                        }
+
+                    <!-- 2. Submitted HoldsFree -->
+                    <td class="p-2 align-top bg-light">
+                        <div class="pipeline-scroll-col">
+                            @if (Model.HoldsFreeOrdersList != null && Model.HoldsFreeOrdersList.Any())
+                            {
+                                foreach (var order in Model.HoldsFreeOrdersList)
+                                {
+                                    decimal rate = order.ProductCode == "01" ? Model.DealerRatesHsd : (order.ProductCode == "02" ? Model.DealerRatesPmg : Model.DealerRatesHobc);
+                                    decimal hfAmt = order.HoldFreeQty * rate;
+                                    string popContent = "<div class='small text-left'>" +
+                                        "<p class='mb-1'><b>Holdsfree Date:</b> " + (order.HoldsFreeDateTime.HasValue ? order.HoldsFreeDateTime.Value.ToString("yyyy-MM-dd HH:mm") : (order.HoldsFreeDate.HasValue ? order.HoldsFreeDate.Value.ToString("yyyy-MM-dd") : "N/A")) + "</p>" +
+                                        "<p class='mb-1'><b>Ordered Qty:</b> " + (order.RequiredQuantity.ToString("N0")) + " L</p>" +
+                                        "<p class='mb-1'><b>Holdsfree Qty:</b> " + (order.HoldFreeQty.ToString("N0")) + " L</p>" +
+                                        "<p class='mb-1'><b>Holdsfree Balance:</b> " + (order.HoldsFreeBalance.ToString("N0")) + " L</p>" +
+                                        "<p class='mb-1'><b>Holdsfree Amount:</b> PKR " + (hfAmt.ToString("N0")) + "</p>" +
+                                        "<p class='mb-2'><b>Product:</b> " + (order.ProductName ?? (order.ProductCode == "01" ? "HSD" : "PMG")) + "</p>" +
+                                        "<a href='" + Url.Action("OrderStatus", "Home", new { q = order.OrderPrefixId, os = "submitted" }) + "' class='btn btn-sm btn-success btn-block text-white font-weight-bold'>View Order Status</a>" +
+                                        "</div>";
+
+                                    <div class="pipeline-card card mb-2 p-2 shadow-sm text-center border-success"
+                                         data-toggle="popover"
+                                         data-html="true"
+                                         data-placement="right"
+                                         data-trigger="hover focus"
+                                         data-title="<span class='text-success font-weight-bold'><i class='fa fa-check mr-1'></i> Submitted</span>"
+                                         data-content="@popContent">
+                                        <a href="@Url.Action("OrderStatus", "Home", new { q = order.OrderPrefixId, os = "submitted" })" class="text-success font-weight-bold d-block text-truncate">@order.OrderPrefixId</a>
+                                        <small class="text-muted font-weight-bold">By @(order.HoldsFreeDate.HasValue ? order.HoldsFreeDate.Value.ToString("yyyy-MM-dd") : "Approved")</small>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="text-center py-4 text-muted small">No holdsfree orders</div>
+                            }
+                        </div>
                     </td>
-                    <td width="20%" class="text-center p-3 align-top">
-                        <span class="text-muted small">No scheduled orders</span>
+
+                    <!-- 3. Being Scheduled -->
+                    <td class="p-2 align-top bg-light">
+                        <div class="pipeline-scroll-col">
+                            @if (Model.ScheduledOrdersList != null && Model.ScheduledOrdersList.Any())
+                            {
+                                foreach (var order in Model.ScheduledOrdersList)
+                                {
+                                    decimal rate = order.ProductCode == "01" ? Model.DealerRatesHsd : (order.ProductCode == "02" ? Model.DealerRatesPmg : Model.DealerRatesHobc);
+                                    decimal rlAmt = (order.ReleaseQty ?? 0) * rate;
+                                    string popContent = "<div class='small text-left'>" +
+                                        "<p class='mb-1'><b>Holdsfree Date:</b> " + (order.HoldsFreeDate.HasValue ? order.HoldsFreeDate.Value.ToString("yyyy-MM-dd") : "N/A") + "</p>" +
+                                        "<p class='mb-1'><b>Holdsfree Qty:</b> " + (order.HoldFreeQty.ToString("N0")) + " L</p>" +
+                                        "<p class='mb-1'><b>Release Qty:</b> " + ((order.ReleaseQty ?? 0).ToString("N0")) + " L</p>" +
+                                        "<p class='mb-1'><b>Release Amount:</b> PKR " + (rlAmt.ToString("N0")) + "</p>" +
+                                        "<p class='mb-1'><b>Released Date:</b> " + (order.ApprovedDate.HasValue ? order.ApprovedDate.Value.ToString("yyyy-MM-dd") : "N/A") + "</p>" +
+                                        "<p class='mb-1'><b>Product:</b> " + (order.ProductName ?? (order.ProductCode == "01" ? "HSD" : "PMG")) + "</p>" +
+                                        "<p class='mb-2'><b>Tank Lorry:</b> " + (order.CarrierCode ?? "Pending") + "</p>" +
+                                        "<a href='" + Url.Action("OrderStatus", "Home", new { q = order.OrderPrefixId, os = "scheduled" }) + "' class='btn btn-sm btn-info btn-block text-white font-weight-bold'>View Order Status</a>" +
+                                        "</div>";
+
+                                    <div class="pipeline-card card mb-2 p-2 shadow-sm text-center border-info"
+                                         data-toggle="popover"
+                                         data-html="true"
+                                         data-placement="right"
+                                         data-trigger="hover focus"
+                                         data-title="<span class='text-info font-weight-bold'><i class='fa fa-calendar-check-o mr-1'></i> Being Scheduled</span>"
+                                         data-content="@popContent">
+                                        <a href="@Url.Action("OrderStatus", "Home", new { q = order.OrderPrefixId, os = "scheduled" })" class="text-info font-weight-bold d-block text-truncate">@order.OrderPrefixId</a>
+                                        <small class="text-muted font-weight-bold">By @(order.HoldsFreeDate.HasValue ? order.HoldsFreeDate.Value.AddDays(2).ToString("yyyy-MM-dd") : "Scheduled")</small>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="text-center py-4 text-muted small">No scheduled orders</div>
+                            }
+                        </div>
                     </td>
-                    <td width="20%" class="text-center p-3 align-top">
-                        <span class="text-muted small">No orders in transit</span>
+
+                    <!-- 4. Shipping -->
+                    <td class="p-2 align-top bg-light">
+                        <div class="pipeline-scroll-col">
+                            @if (Model.ShippedOrdersList != null && Model.ShippedOrdersList.Any())
+                            {
+                                foreach (var order in Model.ShippedOrdersList)
+                                {
+                                    string popContent = "<div class='small text-left'>" +
+                                        "<p class='mb-1'><b>Shipped Qty:</b> " + ((order.ReleaseQty ?? order.RequiredQuantity).ToString("N0")) + " L</p>" +
+                                        "<p class='mb-1'><b>Product:</b> " + (order.ProductName ?? (order.ProductCode == "01" ? "HSD" : "PMG")) + "</p>" +
+                                        "<p class='mb-2'><b>Tank Lorry:</b> " + (order.CarrierCode ?? "Pending") + "</p>" +
+                                        "<a href='" + Url.Action("OrderStatus", "Home", new { q = order.OrderPrefixId, os = "shipped" }) + "' class='btn btn-sm btn-warning btn-block text-dark font-weight-bold'>View Order Status</a>" +
+                                        "</div>";
+
+                                    <div class="pipeline-card card mb-2 p-2 shadow-sm text-center border-warning"
+                                         data-toggle="popover"
+                                         data-html="true"
+                                         data-placement="left"
+                                         data-trigger="hover focus"
+                                         data-title="<span class='text-warning font-weight-bold'><i class='fa fa-truck mr-1'></i> Being Shipped</span>"
+                                         data-content="@popContent">
+                                        <a href="@Url.Action("OrderStatus", "Home", new { q = order.OrderPrefixId, os = "shipped" })" class="text-warning font-weight-bold d-block text-truncate">@order.OrderPrefixId</a>
+                                        <small class="text-muted font-weight-bold">In Transit</small>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="text-center py-4 text-muted small">No orders in transit</div>
+                            }
+                        </div>
                     </td>
-                    <td width="20%" class="text-center p-3 align-top">
-                        @if (Model.InvoicedOrdersCount > 0)
-                        {
-                            <div class="card border border-primary mb-2 p-2 shadow-sm">
-                                <span class="text-primary font-weight-bold">@Model.InvoicedOrdersCount Order(s)</span>
-                                <a href="@Url.Action("InvoicedOrders", "Home")" class="text-primary small mt-1 font-weight-bold">View Invoiced</a>
-                            </div>
-                        }
-                        else
-                        {
-                            <span class="text-muted small">No delivered orders</span>
-                        }
+
+                    <!-- 5. Delivered -->
+                    <td class="p-2 align-top bg-light">
+                        <div class="pipeline-scroll-col">
+                            @if (Model.DeliveredOrdersList != null && Model.DeliveredOrdersList.Any())
+                            {
+                                foreach (var order in Model.DeliveredOrdersList)
+                                {
+                                    string popContent = "<div class='small text-left'>" +
+                                        "<p class='mb-1'><b>Delivered Qty:</b> " + ((order.ReleaseQty ?? order.RequiredQuantity).ToString("N0")) + " L</p>" +
+                                        "<p class='mb-1'><b>Delivered Date:</b> " + (order.ReceivedDateTime.HasValue ? order.ReceivedDateTime.Value.ToString("yyyy-MM-dd HH:mm") : "N/A") + "</p>" +
+                                        "<p class='mb-1'><b>Product:</b> " + (order.ProductName ?? (order.ProductCode == "01" ? "HSD" : "PMG")) + "</p>" +
+                                        "<p class='mb-2'><b>Tank Lorry:</b> " + (order.CarrierCode ?? "N/A") + "</p>" +
+                                        "<a href='" + Url.Action("InvoiceOrderDetail", "Home", new { op = order.OrderPrefixId }) + "' class='btn btn-sm btn-primary btn-block text-white font-weight-bold'>View Invoice Details</a>" +
+                                        "</div>";
+
+                                    <div class="pipeline-card card mb-2 p-2 shadow-sm text-center border-primary"
+                                         data-toggle="popover"
+                                         data-html="true"
+                                         data-placement="left"
+                                         data-trigger="hover focus"
+                                         data-title="<span class='text-primary font-weight-bold'><i class='fa fa-check-circle mr-1'></i> Delivered</span>"
+                                         data-content="@popContent">
+                                        <a href="@Url.Action("InvoiceOrderDetail", "Home", new { op = order.OrderPrefixId })" class="text-primary font-weight-bold d-block text-truncate">@order.OrderPrefixId</a>
+                                        <small class="text-muted font-weight-bold">By @(order.ReceivedDateTime.HasValue ? order.ReceivedDateTime.Value.ToString("yyyy-MM-dd") : "Delivered")</small>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="text-center py-4 text-muted small">No delivered orders</div>
+                            }
+                        </div>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
 </div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // Initialize hover popovers on all pipeline cards
+            $('[data-toggle="popover"]').popover({
+                html: true,
+                trigger: 'hover focus',
+                container: 'body',
+                boundary: 'window'
+            });
+        });
+    </script>
+}

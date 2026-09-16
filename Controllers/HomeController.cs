@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Web.Mvc;
 using CustomerPortal_MVC_.DAL;
@@ -8,7 +9,7 @@ using CustomerPortal_MVC_.Services;
 
 namespace CustomerPortal_MVC_.Controllers
 {
-    [CustomAuthorize(Roles = "Customer")]
+    [CustomAuthorize(Roles = "Customer,Admin")]
     public class HomeController : Controller
     {
         private readonly ICustomerService _customerService;
@@ -45,10 +46,10 @@ namespace CustomerPortal_MVC_.Controllers
         // GET: /Home/OpenOrderDetail?op=TG-20260915-0001
         public ActionResult OpenOrderDetail(string op)
         {
-            if (string.IsNullOrEmpty(op)) return RedirectToAction("OpenOrders");
+            if (string.IsNullOrWhiteSpace(op)) return RedirectToAction("OpenOrders");
 
-            var order = _orderService.GetOrderDetail(op);
-            if (order == null || order.OrderCreatedUser != UserSession.UserId)
+            var order = _orderService.GetOrderDetail(op.Trim());
+            if (order == null || (!UserSession.IsAdmin && !string.Equals(order.OrderCreatedUser?.Trim(), UserSession.UserId?.Trim(), StringComparison.OrdinalIgnoreCase)))
             {
                 return HttpNotFound();
             }
@@ -67,15 +68,21 @@ namespace CustomerPortal_MVC_.Controllers
         // GET: /Home/InvoiceOrderDetail?op=TG-20260915-0001
         public ActionResult InvoiceOrderDetail(string op)
         {
-            if (string.IsNullOrEmpty(op)) return RedirectToAction("InvoicedOrders");
+            if (string.IsNullOrWhiteSpace(op)) return RedirectToAction("InvoicedOrders");
 
-            var order = _orderService.GetOrderDetail(op);
-            if (order == null || order.OrderCreatedUser != UserSession.UserId)
+            var order = _orderService.GetOrderDetail(op.Trim());
+            if (order == null || (!UserSession.IsAdmin && !string.Equals(order.OrderCreatedUser?.Trim(), UserSession.UserId?.Trim(), StringComparison.OrdinalIgnoreCase)))
             {
                 return HttpNotFound();
             }
 
             return View(order);
+        }
+
+        // GET: /Home/StationManual
+        public ActionResult StationManual()
+        {
+            return View();
         }
 
         // GET: /Home/PendingOrders
@@ -87,10 +94,32 @@ namespace CustomerPortal_MVC_.Controllers
         }
 
         // GET: /Home/OrderStatus
-        public ActionResult OrderStatus()
+        public ActionResult OrderStatus(string q = null, string os = null)
         {
             string customerId = UserSession.UserId;
             var orders = _orderService.GetOpenOrders(customerId);
+            if (!string.IsNullOrEmpty(q))
+            {
+                string trimmedQ = q.Trim();
+                var specificOrder = orders.Where(o => string.Equals(o.OrderPrefixId?.Trim(), trimmedQ, StringComparison.OrdinalIgnoreCase)).ToList();
+                if (specificOrder.Any())
+                {
+                    return View(specificOrder);
+                }
+                else
+                {
+                    using (var db = new PortalDbContext())
+                    {
+                        var match = db.CustOrders
+                            .Where(o => (o.OrderCreatedUser == customerId || UserSession.IsAdmin) && o.OrderPrefixId.Trim() == trimmedQ)
+                            .ToList();
+                        if (match.Any())
+                        {
+                            return View(match);
+                        }
+                    }
+                }
+            }
             return View(orders);
         }
 

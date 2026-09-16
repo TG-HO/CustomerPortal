@@ -1,112 +1,261 @@
 @{
-    ViewBag.Title = "Customer Portal - Onboarding Videos";
+    ViewBag.Title = "Taj Learning Center - Forecourt Staff Onboarding Videos";
     ViewBag.ActiveMenu = "Videos";
 }
 
 <div class="container-fluid">
-    <div class="alert custOrderTab">
-        <i class="fas fa-play-circle mr-2"></i> Customer portal - onboarding videos
+    <div class="alert custOrderTab d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-play-circle mr-2"></i> Forecourt Staff Onboarding - Training Modules</span>
+        <a href="@Url.Action("StationManual", "Home")" class="btn btn-sm btn-light font-weight-bold text-danger">
+            <i class="fas fa-book-open mr-1"></i> Read Station Manual
+        </a>
     </div>
 
-    <div class="table-responsive">
-        <table class="table table-hover mt-3">
-            <thead>
-                <tr class="table-bordered text-center">
-                    <th scope="col" style="width: 100px;">Serial No</th>
-                    <th scope="col" class="text-left">Video Name</th>
-                    <th scope="col" style="width: 100px;">Play</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th scope="row" class="text-center">1</th>
-                    <td>Attendance process</td>
-                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Attendance.mp4"><i class="fa fa-play"></i></button></td>
-                </tr>
-                <tr>
-                    <th scope="row" class="text-center">2</th>
-                    <td>Biker service steps</td>
-                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Bikercustomerservicesteps.mp4"><i class="fa fa-play"></i></button></td>
-                </tr>
-                <tr>
-                    <th scope="row" class="text-center">3</th>
-                    <td>Cashier service steps</td>
-                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Cashierservicesteps.mp4"><i class="fa fa-play"></i></button></td>
-                </tr>
-                <tr>
-                    <th scope="row" class="text-center">4</th>
-                    <td>Customer measurement check</td>
-                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Customermeasurementcheckprocess.mp4"><i class="fa fa-play"></i></button></td>
-                </tr>
-                <tr>
-                    <th scope="row" class="text-center">5</th>
-                    <td>Diesel customer service steps</td>
-                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Dieselcustomerservicesteps.mp4"><i class="fa fa-play"></i></button></td>
-                </tr>
-                <tr>
-                    <th scope="row" class="text-center">6</th>
-                    <td>Entering quantity</td>
-                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Enteringquantity.mp4"><i class="fa fa-play"></i></button></td>
-                </tr>
-                <tr>
-                    <th scope="row" class="text-center">7</th>
-                    <td>HSSE basics</td>
-                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="HSSEBasicstraining.mp4"><i class="fa fa-play"></i></button></td>
-                </tr>
-                <tr>
-                    <th scope="row" class="text-center">8</th>
-                    <td>Motorist service steps</td>
-                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Motoristcustomerservicesteps.mp4"><i class="fa fa-play"></i></button></td>
-                </tr>
-                <tr>
-                    <th scope="row" class="text-center">9</th>
-                    <td>Namaz SOP</td>
-                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="NamazSOP.mp4"><i class="fa fa-play"></i></button></td>
-                </tr>
-                <tr>
-                    <th scope="row" class="text-center">10</th>
-                    <td>Nozzle handling</td>
-                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Nozzlehandling.mp4"><i class="fa fa-play"></i></button></td>
-                </tr>
-                <tr>
-                    <th scope="row" class="text-center">11</th>
-                    <td>Personal hygiene</td>
-                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Peronalhygienetraining.mp4"><i class="fa fa-play"></i></button></td>
-                </tr>
-                <tr>
-                    <th scope="row" class="text-center">12</th>
-                    <td>Personal grooming</td>
-                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Personalgroomingtraining.mp4"><i class="fa fa-play"></i></button></td>
-                </tr>
-                <tr>
-                    <th scope="row" class="text-center">13</th>
-                    <td>Uniform guidelines</td>
-                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Uniformguidelines.mp4"><i class="fa fa-play"></i></button></td>
-                </tr>
-                <tr>
-                    <th scope="row" class="text-center">14</th>
-                    <td>Welcoming posture</td>
-                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Uniformguidelines.mp4"><i class="fa fa-play"></i></button></td>
-                </tr>
-                <tr>
-                    <th scope="row" class="text-center">15</th>
-                    <td>Decantation process</td>
-                    <td class="text-center"><button class="btn btn-sm btn-danger play-btn" data-video="Decantationprocess.mp4"><i class="fa fa-play"></i></button></td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" id="trainingVideosTable">
+                    <thead class="thead-light">
+                        <tr class="text-center">
+                            <th scope="col" style="width: 100px;">Module #</th>
+                            <th scope="col" class="text-left">Training Video Lesson</th>
+                            <th scope="col" style="width: 140px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row" class="text-center">1</th>
+                            <td class="font-weight-bold text-dark">Attendance process</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-danger play-btn px-3" data-video="Attendance.mp4" data-title="Attendance Process">
+                                    <i class="fa fa-play mr-1"></i> Watch
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-center">2</th>
+                            <td class="font-weight-bold text-dark">Biker service steps</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-danger play-btn px-3" data-video="Bikercustomerservicesteps.mp4" data-title="Biker Customer Service Steps">
+                                    <i class="fa fa-play mr-1"></i> Watch
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-center">3</th>
+                            <td class="font-weight-bold text-dark">Cashier service steps</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-danger play-btn px-3" data-video="Cashierservicesteps.mp4" data-title="Cashier Service Steps">
+                                    <i class="fa fa-play mr-1"></i> Watch
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-center">4</th>
+                            <td class="font-weight-bold text-dark">Customer measurement check</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-danger play-btn px-3" data-video="Customermeasurementcheckprocess.mp4" data-title="Customer Measurement Check Process">
+                                    <i class="fa fa-play mr-1"></i> Watch
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-center">5</th>
+                            <td class="font-weight-bold text-dark">Diesel customer service steps</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-danger play-btn px-3" data-video="Dieselcustomerservicesteps.mp4" data-title="Diesel Customer Service Steps">
+                                    <i class="fa fa-play mr-1"></i> Watch
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-center">6</th>
+                            <td class="font-weight-bold text-dark">Entering quantity</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-danger play-btn px-3" data-video="Enteringquantity.mp4" data-title="Entering Quantity into Dispenser">
+                                    <i class="fa fa-play mr-1"></i> Watch
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-center">7</th>
+                            <td class="font-weight-bold text-dark">HSSE basics</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-danger play-btn px-3" data-video="HSSEBasicstraining.mp4" data-title="HSSE Basics Training">
+                                    <i class="fa fa-play mr-1"></i> Watch
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-center">8</th>
+                            <td class="font-weight-bold text-dark">Motorist service steps</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-danger play-btn px-3" data-video="Motoristcustomerservicesteps.mp4" data-title="Motorist Customer Service Steps">
+                                    <i class="fa fa-play mr-1"></i> Watch
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-center">9</th>
+                            <td class="font-weight-bold text-dark">Namaz SOP</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-danger play-btn px-3" data-video="NamazSOP.mp4" data-title="Namaz Prayer Break SOP">
+                                    <i class="fa fa-play mr-1"></i> Watch
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-center">10</th>
+                            <td class="font-weight-bold text-dark">Nozzle handling</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-danger play-btn px-3" data-video="Nozzlehandling.mp4" data-title="Nozzle Handling Protocols">
+                                    <i class="fa fa-play mr-1"></i> Watch
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-center">11</th>
+                            <td class="font-weight-bold text-dark">Personal hygiene</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-danger play-btn px-3" data-video="Peronalhygienetraining.mp4" data-title="Personal Hygiene Training">
+                                    <i class="fa fa-play mr-1"></i> Watch
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-center">12</th>
+                            <td class="font-weight-bold text-dark">Personal grooming</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-danger play-btn px-3" data-video="Personalgroomingtraining.mp4" data-title="Personal Grooming Training">
+                                    <i class="fa fa-play mr-1"></i> Watch
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-center">13</th>
+                            <td class="font-weight-bold text-dark">Uniform guidelines</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-danger play-btn px-3" data-video="Uniformguidelines.mp4" data-title="Uniform Guidelines">
+                                    <i class="fa fa-play mr-1"></i> Watch
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-center">14</th>
+                            <td class="font-weight-bold text-dark">Welcoming posture</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-danger play-btn px-3" data-video="Welcomingposture.mp4" data-title="Welcoming Customer Posture">
+                                    <i class="fa fa-play mr-1"></i> Watch
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="text-center">15</th>
+                            <td class="font-weight-bold text-dark">Decantation process</td>
+                            <td class="text-center">
+                                <button class="btn btn-sm btn-danger play-btn px-3" data-video="Decantationprocess.mp4" data-title="Fuel Decantation Offloading Process">
+                                    <i class="fa fa-play mr-1"></i> Watch
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Video Player Modal -->
+<div class="modal fade" id="videoModal" tabindex="-1" role="dialog" aria-labelledby="videoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-dark text-white py-3">
+                <h5 class="modal-title font-weight-bold" id="videoModalLabel">
+                    <i class="fas fa-play-circle text-danger mr-2"></i> <span id="modalVideoTitle">Video Lesson</span>
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body p-3 bg-black">
+                <!-- Video Element -->
+                <div class="embed-responsive embed-responsive-16by9 bg-dark rounded overflow-hidden" id="videoContainer">
+                    <video id="trainingVideoPlayer" controls class="embed-responsive-item">
+                        <source id="videoSource" src="" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+
+                <!-- Missing/Sync Fallback Alert -->
+                <div id="videoFallbackAlert" class="alert alert-warning mb-0 mt-2 p-3 text-dark d-none">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-info-circle fa-2x text-warning mr-3"></i>
+                        <div>
+                            <h6 class="font-weight-bold mb-1">Module Queued for Synchronization</h6>
+                            <p class="mb-1 small">The high-definition video lesson for <strong id="fallbackVideoName">this module</strong> is currently being uploaded or synchronized by the Taj Gasoline Training Department.</p>
+                            <p class="mb-0 small">Please refer to the comprehensive written <a href="@Url.Action("StationManual", "Home")" class="font-weight-bold text-danger text-underline">Station Operations Manual</a> or contact your Area Retail Manager.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light py-2">
+                <a href="@Url.Action("StationManual", "Home")" class="btn btn-outline-danger btn-sm font-weight-bold mr-auto">
+                    <i class="fas fa-book-open mr-1"></i> View Related SOP in Station Manual
+                </a>
+                <button type="button" class="btn btn-secondary btn-sm px-4" data-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
 </div>
 
 @section scripts {
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const playButtons = document.querySelectorAll(".play-btn");
-            playButtons.forEach(button => {
-                button.addEventListener("click", function () {
-                    const videoSrc = "@Url.Content("~/Content/videos/")" + this.dataset.video;
-                    window.open(videoSrc, "Video Player", "width=800, height=600");
-                });
+        $(document).ready(function () {
+            var player = document.getElementById('trainingVideoPlayer');
+            var source = document.getElementById('videoSource');
+            var fallbackAlert = $('#videoFallbackAlert');
+            var videoContainer = $('#videoContainer');
+
+            $('.play-btn').on('click', function () {
+                var videoFile = $(this).data('video');
+                var videoTitle = $(this).data('title');
+
+                $('#modalVideoTitle').text(videoTitle);
+                $('#fallbackVideoName').text(videoTitle + ' (' + videoFile + ')');
+
+                fallbackAlert.addClass('d-none');
+                videoContainer.removeClass('d-none');
+
+                var videoUrl = '@Url.Content("~/Content/videos/")' + videoFile;
+                source.setAttribute('src', videoUrl);
+                player.load();
+
+                // Show modal
+                $('#videoModal').modal('show');
+
+                // Attempt playback with error detection
+                var playPromise = player.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(function (error) {
+                        console.log("Video autoplay prevented or file unavailable: ", error);
+                    });
+                }
+            });
+
+            // On video playback error
+            player.addEventListener('error', function () {
+                console.log("Video source error encountered.");
+                videoContainer.addClass('d-none');
+                fallbackAlert.removeClass('d-none');
+            }, true);
+
+            // Stop playback on modal close
+            $('#videoModal').on('hidden.bs.modal', function () {
+                player.pause();
+                source.setAttribute('src', '');
+                player.load();
+                fallbackAlert.addClass('d-none');
+                videoContainer.removeClass('d-none');
             });
         });
     </script>

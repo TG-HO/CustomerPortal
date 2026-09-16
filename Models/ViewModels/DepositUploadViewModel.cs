@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web;
 
@@ -7,9 +8,18 @@ namespace CustomerPortal_MVC_.Models.ViewModels
     public class DepositUploadViewModel
     {
         [Required(ErrorMessage = "Deposit amount is required.")]
-        [Range(0.01, 100000000, ErrorMessage = "Amount must be greater than zero.")]
         [Display(Name = "Deposit Amount (PKR)")]
-        public decimal Amount { get; set; }
+        public string Amount { get; set; }
+
+        public decimal NumericAmount
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(Amount)) return 0m;
+                string clean = Amount.Replace(",", "").Trim();
+                return decimal.TryParse(clean, out decimal d) ? d : 0m;
+            }
+        }
 
         [Required(ErrorMessage = "Bank name is required.")]
         [StringLength(100)]
@@ -76,5 +86,12 @@ namespace CustomerPortal_MVC_.Models.ViewModels
         public decimal DealerRatesHsd { get; set; }
         public decimal DealerRatesPmg { get; set; }
         public decimal DealerRatesHobc { get; set; }
+
+        // Pipeline Order lists for interactive hover on Home Dashboard
+        public List<CustOrderTable> PendingOrdersList { get; set; } = new List<CustOrderTable>();
+        public List<CustOrderTable> HoldsFreeOrdersList { get; set; } = new List<CustOrderTable>();
+        public List<CustOrderTable> ScheduledOrdersList { get; set; } = new List<CustOrderTable>();
+        public List<CustOrderTable> ShippedOrdersList { get; set; } = new List<CustOrderTable>();
+        public List<CustOrderTable> DeliveredOrdersList { get; set; } = new List<CustOrderTable>();
     }
 }

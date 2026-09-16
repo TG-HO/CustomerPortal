@@ -37,27 +37,75 @@ namespace CustomerPortal_MVC_.Services
 
         public List<LubricantBrand> GetBrands()
         {
-            return _db.LubricantBrands.OrderBy(b => b.BrandName).ToList();
+            return new List<LubricantBrand>
+            {
+                new LubricantBrand { BrandId = 1, BrandName = "PSO" },
+                new LubricantBrand { BrandId = 2, BrandName = "SHELL" },
+                new LubricantBrand { BrandId = 3, BrandName = "CHEVRON" },
+                new LubricantBrand { BrandId = 4, BrandName = "INDUS MOTOR" }
+            };
         }
 
         public List<LubricantProduct> GetProductsByBrand(int brandId)
         {
-            return _db.LubricantProducts
-                .Where(p => p.BrandId == brandId)
-                .OrderBy(p => p.ProductName)
-                .ToList();
+            try
+            {
+                string sql = @"select i.ITEMID as ProductCode, 
+                                      ec.NAME as ProductName, 
+                                      isnull(cast(itm.PRICE as decimal(18,2)), 0) as Price,
+                                      @p0 as BrandId
+                               from INVENTTABLE as i
+                               inner join INVENTITEMGROUPITEM as ig on ig.ITEMID = i.ITEMID and i.DATAAREAID = ig.ITEMDATAAREAID
+                               inner join ECORESPRODUCTTRANSLATION as ec on ec.PRODUCT = i.PRODUCT
+                               left join INVENTTABLEMODULE itm on itm.ITEMID = i.ITEMID and itm.DATAAREAID = 'aml' and itm.MODULETYPE = 2
+                               where i.DATAAREAID = 'aml' 
+                               and ig.ITEMGROUPID = 'Lubricant' 
+                               and i.brand = @p0
+                               order by ec.NAME";
+                var list = _db.Database.SqlQuery<LubricantProduct>(sql, brandId).ToList();
+                return list;
+            }
+            catch
+            {
+                return new List<LubricantProduct>();
+            }
         }
 
         public decimal GetProductPrice(string productCode, string customerId)
         {
-            var product = _db.LubricantProducts.FirstOrDefault(p => p.ProductCode == productCode);
-            return product?.Price ?? 0m;
+            try
+            {
+                string sql = @"select top 1 cast(itm.PRICE as decimal(18,2))
+                               from INVENTTABLEMODULE itm
+                               where itm.DATAAREAID = 'aml' and itm.MODULETYPE = 2 and itm.ITEMID = @p0";
+                var price = _db.Database.SqlQuery<decimal?>(sql, productCode).FirstOrDefault();
+                return price ?? 0m;
+            }
+            catch
+            {
+                return 0m;
+            }
         }
 
         public LubricantOrderHead CreateLubeOrder(LubeOrderCreateViewModel model, string customerId)
         {
-            var product = _db.LubricantProducts.FirstOrDefault(p => p.ProductCode == model.ProductCode);
-            decimal unitPrice = model.UnitPrice > 0 ? model.UnitPrice : (product?.Price ?? 0m);
+            decimal unitPrice = model.UnitPrice > 0 ? model.UnitPrice : GetProductPrice(model.ProductCode, customerId);
+            string prodName = model.ProductName;
+            if (string.IsNullOrEmpty(prodName))
+            {
+                try
+                {
+                    string nameSql = @"select top 1 ec.NAME from INVENTTABLE as i
+                                       inner join ECORESPRODUCTTRANSLATION as ec on ec.PRODUCT = i.PRODUCT
+                                       where i.ITEMID = @p0 and i.DATAAREAID = 'aml'";
+                    prodName = _db.Database.SqlQuery<string>(nameSql, model.ProductCode).FirstOrDefault() ?? model.ProductCode;
+                }
+                catch
+                {
+                    prodName = model.ProductCode;
+                }
+            }
+
             decimal totalPrice = model.Quantity * unitPrice;
 
             int nextOrderId = 1;
@@ -79,7 +127,9 @@ namespace CustomerPortal_MVC_.Services
                 StatusFlag = 0,
                 FinalStatus = 0,
                 DataAreaId = "aml",
-                IsNew = 1
+                IsNew = 1,
+                TotalQty = (int)model.Quantity,
+                GrandTotal = totalPrice
             };
 
             _db.LubricantOrderHeads.Add(head);
@@ -90,7 +140,7 @@ namespace CustomerPortal_MVC_.Services
                 OrderHeadRef = orderNumber,
                 CustomerCode = customerId,
                 ProductCode = model.ProductCode,
-                ProductName = model.ProductName ?? product?.ProductName,
+                ProductName = prodName,
                 RequiredQty = (int)model.Quantity,
                 ProductRates = (double)unitPrice,
                 TotalAmount = (double)totalPrice,
@@ -148,10 +198,34 @@ namespace CustomerPortal_MVC_.Services
         public List<LubricantOrderHead> GetSubmittedLubeOrders(string customerId)
         {
             string cid = customerId?.Trim();
-            return _db.LubricantOrderHeads
+            var heads = _db.LubricantOrderHeads
                 .Where(h => (h.CustomerCode.Trim() == cid || h.CustomerCode == cid) && (h.CancelFlag == 0 || h.CancelFlag == null))
                 .OrderByDescending(h => h.OrderId)
                 .ToList();
+
+            if (!heads.Any()) return heads;
+
+            var orderNums = heads.Select(h => h.OrderNumber).ToList();
+            var finals = _db.LubricantOrderFinals.Where(f => orderNums.Contains(f.OrderHeadRef)).ToList();
+            var lines = _db.LubricantOrderLines.Where(l => orderNums.Contains(l.OrderHeadRef)).ToList();
+
+            foreach (var h in heads)
+            {
+                var matchingFinals = finals.Where(f => f.OrderHeadRef == h.OrderNumber).ToList();
+                if (matchingFinals.Any())
+                {
+                    h.TotalQty = matchingFinals.Sum(f => f.RequiredQty ?? 0);
+                    h.GrandTotal = (decimal)matchingFinals.Sum(f => f.TotalAmount ?? 0);
+                }
+                else
+                {
+                    var matchingLines = lines.Where(l => l.OrderHeadRef == h.OrderNumber).ToList();
+                    h.TotalQty = matchingLines.Sum(l => l.RequiredQty ?? 0);
+                    h.GrandTotal = (decimal)matchingLines.Sum(l => l.TotalAmount ?? 0);
+                }
+            }
+
+            return heads;
         }
 
         public List<LubricantOrderFinal> AdminGetSubmittedLubeOrders()

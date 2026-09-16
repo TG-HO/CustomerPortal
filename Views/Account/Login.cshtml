@@ -63,7 +63,7 @@
                     }
 
                     <div class="wrap-input100 validate-input" id="inp" data-validate="Enter user id">
-                        <input class="input100" type="text" name="UserId" placeholder="User ID" id="id" value="@Model?.UserId" required>
+                        <input class="input100" type="text" name="UserId" placeholder="User ID" id="id" value="@(Model != null ? Model.UserId : "")" required>
                         <span class="focus-input100" data-placeholder="&#xf207;"></span>
                     </div>
                     <div class="wrap-input100 validate-input" data-validate="Enter username">

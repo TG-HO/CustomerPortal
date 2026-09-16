@@ -13,18 +13,39 @@ namespace CustomerPortal_MVC_.Models
         public int Id { get; set; }
 
         [Column("amount")]
-        public decimal Amount { get; set; }
+        [StringLength(50)]
+        public string Amount { get; set; }
+
+        [NotMapped]
+        public decimal NumericAmount
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(Amount)) return 0m;
+                string clean = Amount.Replace(",", "").Trim();
+                return decimal.TryParse(clean, out decimal d) ? d : 0m;
+            }
+            set
+            {
+                Amount = value.ToString("N0");
+            }
+        }
 
         [Column("bank")]
         [StringLength(100)]
         public string Bank { get; set; }
 
+        [NotMapped]
+        public string DsBank => Bank;
+
         [Column("ds_date")]
         public DateTime? DsDate { get; set; }
 
         [Column("description")]
-        [StringLength(255)]
         public string Description { get; set; }
+
+        [NotMapped]
+        public string DsDesc => Description;
 
         [Column("ds_upload")]
         [StringLength(255)]

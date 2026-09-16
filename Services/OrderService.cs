@@ -186,7 +186,9 @@ namespace CustomerPortal_MVC_.Services
 
         public CustOrderTable GetOrderDetail(string orderPrefixId)
         {
-            return _db.CustOrders.FirstOrDefault(o => o.OrderPrefixId == orderPrefixId);
+            if (string.IsNullOrWhiteSpace(orderPrefixId)) return null;
+            string op = orderPrefixId.Trim();
+            return _db.CustOrders.FirstOrDefault(o => o.OrderPrefixId == op || o.OrderPrefixId.Trim() == op);
         }
 
         public bool CancelOrder(string orderPrefixId, string userId)
