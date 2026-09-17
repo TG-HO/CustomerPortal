@@ -37,7 +37,16 @@ namespace CustomerPortal_MVC_.Helpers
 
         public static string UserId
         {
-            get => GetString(KeyUserId);
+            get
+            {
+                string id = GetString(KeyUserId);
+                if (string.IsNullOrEmpty(id) && HttpContext.Current?.User?.Identity?.IsAuthenticated == true)
+                {
+                    id = HttpContext.Current.User.Identity.Name;
+                    SetString(KeyUserId, id);
+                }
+                return id;
+            }
             set => SetString(KeyUserId, value);
         }
 

@@ -1,0 +1,59 @@
+@{
+    Layout = "~/Views/Shared/_LubricantsLayout.cshtml";
+    ViewBag.Title = "Taj Gasoline - Lubricants Portal";
+    ViewBag.ActiveLubeMenu = "Home";
+}
+
+<style>
+    /* Full page cover for Lubricants Home - Zero white spaces, completely on page */
+    body {
+        background-color: #1a0808 !important;
+    }
+    .page-wrapper {
+        min-height: calc(100vh - 70px) !important;
+        background-color: #1a0808 !important;
+    }
+    .page-content {
+        padding: 0 !important;
+        margin: 0 !important;
+        height: calc(100vh - 70px) !important;
+        min-height: calc(100vh - 70px) !important;
+        max-height: calc(100vh - 70px) !important;
+        overflow: hidden !important;
+        background-color: #1a0808 !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    .page-content > .container-fluid {
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 100% !important;
+        flex: 1 1 auto !important;
+        display: flex !important;
+    }
+    .lube-home-bg-container {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #1a0808;
+    }
+    .lube-home-bg-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center center;
+        display: block;
+    }
+</style>
+
+<div class="lube-home-bg-container">
+    <img src="@Url.Content("~/Content/lubricants/Admin/img/Lubricant_Background.png")" 
+         class="lube-home-bg-image" 
+         alt="Taj Gasoline Lubricants Portal" />
+</div>

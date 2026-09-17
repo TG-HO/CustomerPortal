@@ -1,78 +1,12 @@
-@model List<CustomerPortal_MVC_.Models.LubricantOrderHead>
 @{
-    ViewBag.Title = "Lubricant Orders - Customer Portal";
-    ViewBag.ActiveMenu = "Lubricants";
+    Layout = "~/Views/Shared/_LubricantsLayout.cshtml";
+    ViewBag.Title = "Taj Gasoline - Lubricants Portal";
+    ViewBag.ActiveLubeMenu = "Home";
 }
 
-<div class="container-fluid">
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800"><i class="fa fa-dropbox text-danger mr-2"></i>Lubricants Portal</h1>
-        <a href="@Url.Action("NewOrder", "Lubricants")" class="btn btn-danger btn-sm shadow-sm"><i class="fa fa-plus-circle mr-1"></i> New Lubricant Order</a>
-    </div>
-
-    <div class="card shadow border-0 mb-4">
-        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-            <h6 class="m-0 font-weight-bold"><i class="fa fa-list mr-2"></i>Submitted Lubricant Orders</h6>
-            <span class="badge badge-danger">@(Model != null ? Model.Count : 0) Orders</span>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover table-striped table-bordered" id="lubeOrdersTable">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Order Date</th>
-                            <th>Total Qty</th>
-                            <th>Grand Total (PKR)</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (Model != null && Model.Any())
-                        {
-                            foreach (var item in Model)
-                            {
-                                <tr>
-                                    <td class="font-weight-bold text-primary">#(item.OrderNumber ?? ("TLB-" + item.OrderId))</td>
-                                    <td>@((item.CreatedDateTime ?? item.CreatedDate).HasValue ? (item.CreatedDateTime ?? item.CreatedDate).Value.ToString("yyyy-MM-dd HH:mm") : "N/A")</td>
-                                    <td>@((item.TotalQty ?? 0).ToString("N0"))</td>
-                                    <td>PKR @((item.GrandTotal ?? 0).ToString("N2"))</td>
-                                    <td>
-                                        @if (item.OrderStatus == "UPLOADED" || item.OrderStatus == "APPROVED")
-                                        {
-                                            <span class="badge badge-success">Uploaded</span>
-                                        }
-                                        else if (item.OrderStatus == "CANCELLED")
-                                        {
-                                            <span class="badge badge-danger">Cancelled</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge badge-info">@(item.OrderStatus ?? "SUBMITTED")</span>
-                                        }
-                                    </td>
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="5" class="text-center py-4 text-muted">No lubricant orders found.</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
+<div class="row">
+    <div class="col-md-12 text-center">
+        <img src="@Url.Content("~/Content/lubricants/Admin/img/Lubricant_Background.png")" class="img-fluid" 
+             style="max-width: 100%; height: auto; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="Lubricant Background">
     </div>
 </div>
-
-@section scripts {
-    <script>
-        $(document).ready(function () {
-            $('#lubeOrdersTable').DataTable({
-                "ordering": false
-            });
-        });
-    </script>
-}

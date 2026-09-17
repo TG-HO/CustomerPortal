@@ -1,110 +1,136 @@
-@model IEnumerable<CustomerPortal_MVC_.Models.LubricantOrderHead>
 @{
-    ViewBag.Title = "Submitted Lubricant Orders";
-    ViewBag.ActiveMenu = "Lubricants";
+    Layout = "~/Views/Shared/_LubricantsLayout.cshtml";
+    ViewBag.Title = "Taj Gasoline - Submitted Orders Page";
+    ViewBag.ActiveLubeMenu = "SubmittedOrders";
 }
 
-@section styles {
-    <style>
-        .custOrderTab {
-            background-color: #ED1C24 !important;
-            color: white !important;
-            font-size: 16px;
-            font-weight: bold;
-            padding: 12px 20px;
-            border-radius: 4px;
-            margin-bottom: 25px;
-        }
-        .head {
-            background-color: #ED1C24;
-            color: white;
-        }
-        .num {
-            font-weight: 500;
-        }
-    </style>
-}
-
-<div class="container-fluid">
-    <div class="alert custOrderTab shadow-sm">
-        <i class="fas fa-oil-can mr-2"></i> SUBMITTED LUBRICANT ORDERS
-    </div>
-
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fa fa-check-circle mr-2"></i>@TempData["SuccessMessage"]
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
+<!-- Page-Title -->
+<div class="row">
+    <div class="col-sm-12">
+        <div class="page-title-box">
+            <div class="float-right">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Home", "Lubricants")">Lubricant Portal</a></li>
+                    <li class="breadcrumb-item active">Home</li>
+                </ol>
+            </div>
+            <h4 class="page-title">Submitted Orders Page</h4>
         </div>
-    }
-
-    <div class="mb-3 text-right">
-        <a href="@Url.Action("NewOrder", "Lubricants")" class="btn btn-danger font-weight-bold">
-            <i class="fas fa-plus mr-1"></i> Create New Lubricant Order
-        </a>
     </div>
+</div>
 
-    <div class="table-responsive">
-        <table class="table table-sm mt-1 table-hover" id="tabLubeOrders">
-            <thead class="head">
-                <tr class="table-bordered text-white text-center">
-                    <th scope="col">Order Number</th>
-                    <th scope="col">Site</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Submitted Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model != null && Model.Any())
-                {
-                    foreach (var order in Model)
-                    {
-                        <tr class="text-black text-center">
-                            <td class="font-weight-bold text-primary">@order.OrderNumber</td>
-                            <td>@(order.CustSite ?? "-")</td>
-                            <td>
-                                @if (order.OrderStatus == "APPROVED" || order.OrderStatus == "UPLOADED")
-                                {
-                                    <span class="badge badge-success">@order.OrderStatus</span>
-                                }
-                                else if (order.OrderStatus == "CANCELLED")
-                                {
-                                    <span class="badge badge-danger">@order.OrderStatus</span>
-                                }
-                                else
-                                {
-                                    <span class="badge badge-warning">@(order.OrderStatus ?? "SUBMITTED")</span>
-                                }
-                            </td>
-                            <td class="num">@(order.CreatedDateTime.HasValue ? order.CreatedDateTime.Value.ToString("yyyy-MM-dd hh:mm tt") : (order.CreatedDate.HasValue ? order.CreatedDate.Value.ToString("yyyy-MM-dd") : "-"))</td>
-                        </tr>
-                    }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="4" class="text-center py-4 text-muted">No submitted lubricant orders found.</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="text-left">
+                    <div class="table-responsive">
+                        <table id="datatable" class="table table-bordered dt-responsive nowrap" style="overflow-x: auto; border-collapse: collapse; border-spacing: 0; width: 100%;">
+                            <thead class="custom-thead">
+                                <tr>
+                                    <th style="width: 10%">Order Date</th>
+                                    <th style="width: 10%">Order Number</th>
+                                    <th style="width: 10%">Line Number</th>
+                                    <th style="width: 10%">Customer Code</th>
+                                    <th style="width: 10%">Site Name</th>
+                                    <th style="width: 10%">Product Code</th>
+                                    <th style="width: 10%">Product Name</th>
+                                    <th style="width: 10%">Unit</th>
+                                    <th style="width: 10%">Ordered Qty</th>
+                                    <th style="width: 10%">Rates</th>
+                                    <th style="width: 10%">Amount</th>
+                                    <th style="width: 10%">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 @section scripts {
     <script>
         $(document).ready(function () {
-            if ($('#tabLubeOrders tbody tr').length > 0 && !$('#tabLubeOrders tbody tr td[colspan]').length) {
-                $('#tabLubeOrders').DataTable({
-                    order: [[3, 'desc']],
-                    pageLength: 25,
-                    language: {
-                        search: "Search Lubricant Orders:"
-                    }
-                });
+            tblOrders();
+        });
+
+        $.fn.dataTable.ext.errMode = 'none';
+
+        function tblOrders() {
+            if ($.fn.DataTable.isDataTable('#datatable')) {
+                $('#datatable').DataTable().destroy();
             }
+
+            $("#datatable").DataTable({
+                "ajax": {
+                    "url": '@Url.Action("ApiTblSubmittedOrders", "Lubricants")',
+                    "type": "GET",
+                    "dataSrc": function (json) {
+                        if (json && json.data && Array.isArray(json.data)) {
+                            return json.data;
+                        }
+                        return [];
+                    },
+                    "error": function (xhr, error, code) {
+                        console.warn("DataTables Ajax error:", error, code);
+                    }
+                },
+                "dom": 'Bfrtip',
+                "buttons": [
+                    'copyHtml5',
+                    'excelHtml5',
+                    'csvHtml5',
+                    'pdfHtml5'
+                ],
+                "columns": [
+                    { "data": "createdondatetime" },
+                    { "data": "ordernumber" },
+                    { "data": "linenumber" },
+                    { "data": "customercode" },
+                    { "data": "sitename" },
+                    { "data": "productcode" },
+                    { "data": "productname" },
+                    { "data": "unit" },
+                    { "data": "requiredqty" },
+                    { "data": "productrates" },
+                    { "data": "totalamount" },
+                    { "data": "orderstatus" }
+                ],
+                "order": [[2, "desc"]]
+            });
+        }
+
+        $(document).on("click", ".btnDelete", function () {
+            var id = $(this).data('id');
+            Swal.fire({
+                title: "Are you sure?",
+                text: 'Are you sure you want to cancel Order Line Number : ' + id + ' ?',
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes!"
+            }).then((result) => {
+                if (result.isConfirmed || result.value) {
+                    $.ajax({
+                        url: '@Url.Action("ApiDeleteLubeOrders", "Lubricants")',
+                        method: 'POST',
+                        data: { id: id },
+                        success: function (data) {
+                            var res = (typeof data === 'string') ? JSON.parse(data) : data;
+                            if (res.status == 'success') {
+                                tblOrders();
+                            } else {
+                                alert("Something went wrong");
+                            }
+                        }
+                    });
+                }
+            });
         });
     </script>
 }

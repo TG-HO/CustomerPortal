@@ -17,10 +17,7 @@ namespace CustomerPortal_MVC_
             routes.MapRoute("Favicon32Icon", "Content/icon/favicon-32x32.png", new { controller = "Home", action = "Favicon32" });
             routes.MapRoute("Favicon16Icon", "Content/icon/favicon-16x16.png", new { controller = "Home", action = "Favicon16" });
 
-            // Enable attribute routing for fine-grained action-level routes
-            routes.MapMvcAttributeRoutes();
-
-            // Default Route
+            // Standard MVC Default Route
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",

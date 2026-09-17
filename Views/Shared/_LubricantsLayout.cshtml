@@ -1,0 +1,174 @@
+@using CustomerPortal_MVC_.Helpers
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@(ViewBag.Title ?? "Taj Gasoline - Lubricants")</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="Taj Gasoline Portal" name="description" />
+    <meta content="Taj Gasoline" name="author" />
+    <link rel="shortcut icon" href="@Url.Content("~/favicon.ico")">
+
+    <!-- CSS Plugins matching Content/lubricants/assets -->
+    <link rel="stylesheet" href="@Url.Content("~/Content/lubricants/assets/plugins/morris/morris.css")">
+    <link rel="stylesheet" href="@Url.Content("~/Content/lubricants/assets/plugins/sweet-alert2/sweetalert2.min.css")">
+    <link rel="stylesheet" href="@Url.Content("~/Content/lubricants/assets/plugins/daterangepicker/daterangepicker.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/lubricants/assets/plugins/select2/select2.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/lubricants/assets/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/lubricants/assets/plugins/timepicker/bootstrap-material-datetimepicker.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/lubricants/assets/plugins/bootstrap-touchspin/css/jquery.bootstrap-touchspin.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/lubricants/assets/plugins/datatables/dataTables.bootstrap4.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/lubricants/assets/plugins/datatables/buttons.bootstrap4.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/lubricants/assets/plugins/datatables/responsive.bootstrap4.min.css")" />
+
+    <!-- App css -->
+    <link rel="stylesheet" href="@Url.Content("~/Content/lubricants/assets/css/bootstrap.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/lubricants/assets/css/icons.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/lubricants/assets/css/metisMenu.min.css")" />
+    <link rel="stylesheet" href="@Url.Content("~/Content/lubricants/assets/css/style.css")" />
+
+    <style>
+        .middle-center-table-cells {
+            text-align: center !important;
+            vertical-align: middle !important;
+        }
+        .custom-thead {
+            background-color: #283144;
+            color: #fff;
+        }
+        .thumb-xl {
+            height: 48px;
+            width: 48px;
+            object-fit: cover;
+        }
+        .btn-red {
+            background-color: #ed1c24 !important;
+            color: #fff !important;
+            border-color: #ed1c24 !important;
+        }
+        .btn-red:hover {
+            background-color: #c9141b !important;
+            color: #fff !important;
+        }
+        .btn-green {
+            background-color: #4a53c4 !important;
+            color: #fff !important;
+            border-color: #4a53c4 !important;
+        }
+        .btn-green:hover {
+            background-color: #3b43a3 !important;
+            color: #fff !important;
+        }
+        .topbar.grediant-red {
+            background: linear-gradient(135deg, #ed1c24 0%, #b31217 100%) !important;
+        }
+    </style>
+    @RenderSection("styles", required: false)
+</head>
+<body>
+    <!-- Top Bar Start -->
+    <div class="topbar grediant-red">
+        <div class="topbar-left">
+            <a href="@Url.Action("Home", "Lubricants")" class="logo">
+                <span>
+                    <img src="@Url.Content("~/Content/lubricants/assets/images/logo_white.png")" alt="logo-small" style="height: 68px !important" class="logo-sm">
+                </span>
+                <span>
+                    <img src="@Url.Content("~/Content/lubricants/assets/images/logo_white.png")" class="logo-lg logo-light" style="height: 55px !important;" alt="logo-large">
+                </span>
+            </a>
+        </div>
+
+        <nav class="navbar-custom">    
+            <ul class="list-unstyled topbar-nav float-right mb-0"> 
+                <li class="dropdown float-right">
+                    <a class="nav-link dropdown-toggle waves-effect waves-light nav-user" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                        <img src="@Url.Content("~/Content/lubricants/assets/images/users/user-1.jpg")" alt="profile-user" class="rounded-circle" /> 
+                        <span class="ml-1 nav-user-name hidden-sm">@UserSession.UserId <i class="mdi mdi-chevron-down"></i></span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" href="@Url.Action("Index", "Home")"><i class="dripicons-home text-muted mr-2"></i> Main Customer Portal</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="@Url.Action("Logout", "Account")"><i class="dripicons-exit text-muted mr-2"></i> Log-out</a>
+                    </div>
+                </li>
+            </ul>
+
+            <ul class="list-unstyled topbar-nav mb-0">                        
+                <li>
+                    <button class="button-menu-mobile nav-link waves-effect waves-light">
+                        <i class="dripicons-menu nav-icon"></i>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <!-- Top Bar End -->
+
+    <div class="page-wrapper">
+        <!-- Left Sidenav -->
+        <div class="left-sidenav">
+            <ul class="metismenu left-sidenav-menu" id="side-nav">
+                <li class="@(ViewBag.ActiveLubeMenu == "Home" ? "active" : "")">
+                    <a href="@Url.Action("Home", "Lubricants")"><i class="ti-home"></i><span>Home</span></a>
+                </li>
+                <li class="@(ViewBag.ActiveLubeMenu == "NewLubeOrder" ? "active" : "")">
+                    <a href="@Url.Action("NewLubeOrder", "Lubricants")"><i class="ti-bar-chart"></i><span>New Lubricant Order</span></a>
+                </li>
+                <li class="@(ViewBag.ActiveLubeMenu == "SubmittedOrders" ? "active" : "")">
+                    <a href="@Url.Action("SubmittedOrders", "Lubricants")"><i class="ti-bar-chart"></i><span>Submitted Orders</span></a>
+                </li>
+                <li>
+                    <a href="@Url.Action("DownloadPriceList", "Lubricants", new { fileName = "Mastersheet.pdf" })" target="_blank"><i class="ti-bar-chart"></i><span>Download Display Price List</span></a>
+                </li>
+                <li>
+                    <a href="@Url.Action("DownloadPriceList", "Lubricants", new { fileName = "Siteprice.xlsx" })" target="_blank"><i class="ti-bar-chart"></i><span>Download Site Price List</span></a>
+                </li>
+            </ul>
+        </div>
+        <!-- Left Sidenav End -->
+
+        <!-- Page Content -->
+        <div class="page-content">
+            <div class="container-fluid">
+                @RenderBody()
+            </div>
+        </div>
+        <!-- End Page Content -->
+    </div>
+    <!-- End Page Wrapper -->
+
+    <!-- Core & Plugin Scripts matching Content/lubricants -->
+    <script src="@Url.Content("~/Content/lubricants/assets/js/jquery.min.js")"></script>
+    <script src="@Url.Content("~/Content/lubricants/assets/js/bootstrap.bundle.min.js")"></script>
+    <script src="@Url.Content("~/Content/lubricants/assets/js/metisMenu.min.js")"></script>
+    <script src="@Url.Content("~/Content/lubricants/assets/js/waves.min.js")"></script>
+    <script src="@Url.Content("~/Content/lubricants/assets/js/jquery.slimscroll.min.js")"></script>
+    
+    <!-- Plugins -->
+    <script src="@Url.Content("~/Content/lubricants/assets/plugins/moment/moment.js")"></script>
+    <script src="@Url.Content("~/Content/lubricants/assets/plugins/datatables/jquery.dataTables.min.js")"></script>
+    <script src="@Url.Content("~/Content/lubricants/assets/plugins/datatables/dataTables.bootstrap4.min.js")"></script>
+    <script src="@Url.Content("~/Content/lubricants/assets/plugins/datatables/dataTables.responsive.min.js")"></script>
+    <script src="@Url.Content("~/Content/lubricants/assets/plugins/datatables/responsive.bootstrap4.min.js")"></script>
+    <script src="@Url.Content("~/Content/lubricants/assets/plugins/datatables/dataTables.buttons.min.js")"></script>
+    <script src="@Url.Content("~/Content/lubricants/assets/plugins/datatables/buttons.bootstrap4.min.js")"></script>
+    <script src="@Url.Content("~/Content/lubricants/assets/plugins/datatables/jszip.min.js")"></script>
+    <script src="@Url.Content("~/Content/lubricants/assets/plugins/datatables/pdfmake.min.js")"></script>
+    <script src="@Url.Content("~/Content/lubricants/assets/plugins/datatables/vfs_fonts.js")"></script>
+    <script src="@Url.Content("~/Content/lubricants/assets/plugins/datatables/buttons.html5.min.js")"></script>
+    <script src="@Url.Content("~/Content/lubricants/assets/plugins/datatables/buttons.print.min.js")"></script>
+    
+    <script src="@Url.Content("~/Content/lubricants/assets/plugins/sweet-alert2/sweetalert2.min.js")"></script>
+    <script src="@Url.Content("~/Content/lubricants/assets/plugins/daterangepicker/daterangepicker.js")"></script>
+    <script src="@Url.Content("~/Content/lubricants/assets/plugins/select2/select2.min.js")"></script>
+    <script src="@Url.Content("~/Content/lubricants/assets/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js")"></script>
+    <script src="@Url.Content("~/Content/lubricants/assets/plugins/timepicker/bootstrap-material-datetimepicker.js")"></script>
+    <script src="@Url.Content("~/Content/lubricants/assets/plugins/bootstrap-maxlength/bootstrap-maxlength.min.js")"></script>
+    <script src="@Url.Content("~/Content/lubricants/assets/plugins/bootstrap-touchspin/js/jquery.bootstrap-touchspin.min.js")"></script>
+    <script src="@Url.Content("~/Content/lubricants/assets/pages/jquery.forms-advanced.js")"></script>
+    <script src="@Url.Content("~/Content/lubricants/assets/js/app.js")"></script>
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

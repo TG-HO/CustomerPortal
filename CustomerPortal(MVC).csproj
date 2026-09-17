@@ -153,6 +153,7 @@
     <Content Include="Views\web.config" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Shared\_LubricantsLayout.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Account\ChangePassword.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
@@ -171,7 +172,9 @@
     <Content Include="Views\Order\OrderNow.cshtml" />
     <Content Include="Views\Deposit\Upload.cshtml" />
     <Content Include="Views\Lubricants\Index.cshtml" />
+    <Content Include="Views\Lubricants\Home.cshtml" />
     <Content Include="Views\Lubricants\NewOrder.cshtml" />
+    <Content Include="Views\Lubricants\NewLubeOrder.cshtml" />
     <Content Include="Views\Lubricants\SubmittedOrders.cshtml" />
     <Content Include="Views\Lubricants\AdminSubmittedOrders.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />

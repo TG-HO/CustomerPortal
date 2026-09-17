@@ -87,6 +87,23 @@ namespace CustomerPortal_MVC_.Filters
                 throw new ArgumentNullException(nameof(filterContext));
             }
 
+            // If it's an AJAX or API request, return JSON instead of redirecting to login HTML
+            var req = filterContext.HttpContext.Request;
+            bool isAjax = req.IsAjaxRequest() ||
+                          (req.Headers["X-Requested-With"] == "XMLHttpRequest") ||
+                          req.Path.IndexOf("/Api", StringComparison.OrdinalIgnoreCase) >= 0;
+
+            if (isAjax)
+            {
+                filterContext.HttpContext.Response.StatusCode = 200;
+                filterContext.Result = new JsonResult
+                {
+                    Data = new { result = "error", message = "Session expired. Please log in again.", data = new object[0] },
+                    JsonRequestBehavior = JsonRequestBehavior.AllowGet
+                };
+                return;
+            }
+
             if (!UserSession.IsAuthenticated && !filterContext.HttpContext.User.Identity.IsAuthenticated)
             {
                 // User is not logged in -> redirect to login with ReturnUrl
