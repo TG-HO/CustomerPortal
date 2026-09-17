@@ -18,6 +18,7 @@ namespace CustomerPortal_MVC_.Models
 
         [Column("ORDERNUMBER")]
         [StringLength(60)]
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public string OrderNumber { get; set; }
 
         [Column("ORDER_STATUS")]

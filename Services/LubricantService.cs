@@ -176,15 +176,12 @@ namespace CustomerPortal_MVC_.Services
                 _db.LubricantOrderHeads.Add(head);
                 _db.SaveChanges();
 
-                head.OrderNumber = "TLB-" + head.OrderId;
-                _db.SaveChanges();
-
                 newOrderId = head.OrderId;
                 return true;
             }
             catch (Exception ex)
             {
-                error = ex.Message;
+                error = ex.InnerException?.InnerException?.Message ?? ex.InnerException?.Message ?? ex.Message;
                 return false;
             }
         }
@@ -379,7 +376,7 @@ namespace CustomerPortal_MVC_.Services
             }
             catch (Exception ex)
             {
-                error = ex.Message;
+                error = ex.InnerException?.InnerException?.Message ?? ex.InnerException?.Message ?? ex.Message;
                 return false;
             }
         }
@@ -680,18 +677,9 @@ namespace CustomerPortal_MVC_.Services
 
             decimal totalPrice = model.Quantity * unitPrice;
 
-            int nextOrderId = 1;
-            if (_db.LubricantOrderHeads.Any())
-            {
-                nextOrderId = _db.LubricantOrderHeads.Max(h => h.OrderId) + 1;
-            }
-            string orderNumber = "TLB-" + nextOrderId;
-
             var head = new LubricantOrderHead
             {
-                OrderId = nextOrderId,
                 OrderPrefix = "TLB-",
-                OrderNumber = orderNumber,
                 CustomerCode = customerId,
                 CreatedDate = DateTime.Now.Date,
                 CreatedDateTime = DateTime.Now,
@@ -706,6 +694,8 @@ namespace CustomerPortal_MVC_.Services
 
             _db.LubricantOrderHeads.Add(head);
             _db.SaveChanges();
+
+            string orderNumber = head.OrderNumber ?? ("TLB-" + head.OrderId);
 
             var line = new LubricantOrderLine
             {
